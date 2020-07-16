@@ -65,15 +65,15 @@ the session identifiers are parsed using the following `infotoids` (defined with
 ```python
 def infotoids(seqinfos, outdir):
     subject = get_unique(seqinfos, 'example_dcm_file').split('_')[0]
-	session = get_unique(seqinfos, 'example_dcm_file').split('_')[1]
+    session = get_unique(seqinfos, 'example_dcm_file').split('_')[1]
 	
-	ids = {
-	    'locator': '',
-	    'session': session,
-	    'subject': subject,
-	}
-				
-	return ids
+    ids = {
+        'locator': '',
+	'session': session,
+	'subject': subject,
+    }
+    
+    return ids
 ``` 
 
 running with heudiconv (v0.8.0) directly for now:
