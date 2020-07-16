@@ -19,7 +19,7 @@ data/dicoms
 ## requirements
 
 * dcm2niix (v1.0.20200427)
-* python requirements in `requirements.txt`: heudiconv (v0.8.0)
+* python requirements in `requirements.txt`:
     * pydicom>=1.0.2
     * setuptools>=39.2.0
     * extractCMRRPhysio>=0.1.1
@@ -64,19 +64,19 @@ data/
 the session identifiers are parsed using the following `infotoids` (defined within the `clinical_imaging.py` heuristic):
 ```python
 def infotoids(seqinfos, outdir):
-	subject = get_unique(seqinfos, 'example_dcm_file').split('_')[0]
+    subject = get_unique(seqinfos, 'example_dcm_file').split('_')[0]
 	session = get_unique(seqinfos, 'example_dcm_file').split('_')[1]
 	
 	ids = {
-    'locator': '',
-    'session': session,
-    'subject': subject,
+	    'locator': '',
+	    'session': session,
+	    'subject': subject,
 	}
 				
 	return ids
 ``` 
-running with heudiconv (v 0.8.0) directly for now:
 
+running with heudiconv (v0.8.0) directly for now:
 ```
 heudiconv --files data/tars -o data/bids -f heudiconv/clinical_imaging.py -c dcm2niix -b
 ```
