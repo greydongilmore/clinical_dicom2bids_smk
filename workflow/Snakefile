@@ -1,0 +1,20 @@
+from os import listdir
+from os.path import join, isdir
+from glob import glob
+
+configfile: "config/config.yaml"
+
+dicom_dir = config['dicom_dir']
+out_dir = config['out_dir']
+heuristic_file = config['heuristic']
+
+subjects = [x.split('-')[1] for x in listdir(dicom_dir) if isdir(join(dicom_dir, x))]
+
+print(subjects)
+rule all:
+	input:
+		expand(join(out_dir, 'logs', 'sub-P'+'{subject}'+ "_complete.txt"), subject=subjects),		
+
+include: 'rules/dicom2tar.smk'
+include: 'rules/tar2bids.smk'
+include: 'rules/cleanSessions.smk'

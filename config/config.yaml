@@ -1,0 +1,4 @@
+
+dicom_dir: /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/dicoms
+out_dir: /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output
+heuristic: /home/greydon/Documents/GitHub/sampleClinicalWorkflow/workflow/scripts/heudiconv/clinical_imaging.py
