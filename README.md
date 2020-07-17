@@ -52,10 +52,10 @@ Edit the `config/config.yaml` file to include the paths to the following:
 <center>
 
 |Variable   |Description        |
-|-----------|-------------------|
+|:----------|:------------------|
 | **dicom_dir** | full path to where the input dicom directory is stored   |
-| **out_dir:**   | full path to where the pipeline should output the data   |
-| **heuristic:**  | heudiconv template file to sort/name dicoms according to BIDS standard |
+| **out_dir**   | full path to where the pipeline should output the data   |
+| **heuristic**  | heudiconv template file to sort/name dicoms according to BIDS standard |
 
 </center>
 
@@ -120,14 +120,14 @@ The repository has the following scheme:
 <center>
 
 | Variable  | Description                              |
-|-----------|------------------------------------------|
+|:----------|:-----------------------------------------|
 |Overview   | Sorts and stores the dicom files into Tarball files |
 |Input      | MRI/CT dicoms |
 |output     | MRI/CT Tarballs|
 
 </center>
 
-This workflow is modified from the [dicom2tar]() master branch (version date:16/07/2020). The code has been modfied to fit the current pipeline.  
+This workflow is modified from the [dicom2tar](https://github.com/khanlab/dicom2tar) master branch (version date:16/07/2020). The code has been modfied to fit the current pipeline.  
 
 The first pass will provide an intermediate output, Tarball files with the associated scan date in the name:
 ```
@@ -156,7 +156,7 @@ output/
 <center>
 
 | Variable  | Description                              |
-|-----------|------------------------------------------|
+|:----------|:-----------------------------------------|
 |Overview   | Converts the Tarball archives into BIDS compliant format |
 |Input      | MRI/CT dicom Tarball archives |
 |output     | MRI/CT nifti files stored in BIDS layout|
@@ -178,7 +178,7 @@ output/bids/sub-P185/
 <center>
 
 | Variable  | Description                              |
-|-----------|------------------------------------------|
+|:----------|:-----------------------------------------|
 |Overview   | Restructures the BIDS session naming to more meaningful session types |
 |Input      | BIDS directory with default session numbering |
 |output     | BIDS directory with session naming according to surgery date|
