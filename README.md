@@ -115,7 +115,7 @@ The repository has the following scheme:
 └── data                            # contains test input dicoms
 ```
 
-### dicom2tar
+### Rule 01: dicom2tar
 
 <center>
 
@@ -151,7 +151,7 @@ output/
         └── P185_005_2018_03_27_20180327_9WK33LJUKNJP.F61DC193_CT.tar
 ```
 
-## tar2bids
+### Rule 02: tar2bids
 
 <center>
 
@@ -173,7 +173,7 @@ output/bids/sub-P185/
   └── ses-005/anat/...
 ```
 
-## post tar2bids cleanup
+### Rule 03: post tar2bids cleanup
 
 <center>
 
