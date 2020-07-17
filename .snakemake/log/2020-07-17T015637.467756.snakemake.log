@@ -1,0 +1,12 @@
+Building DAG of jobs...
+Creating report...
+Missing metadata for file /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output/logs/sub-P141_complete.txt. Maybe metadata was deleted or it was created using an older version of Snakemake. This is a non critical warning.
+Missing metadata for file /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output/logs/sub-P185_complete.txt. Maybe metadata was deleted or it was created using an older version of Snakemake. This is a non critical warning.
+Missing metadata for file /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output/logs/sub-P197_complete.txt. Maybe metadata was deleted or it was created using an older version of Snakemake. This is a non critical warning.
+Missing metadata for file /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output/logs/sub-P141_bids_complete.txt. Maybe metadata was deleted or it was created using an older version of Snakemake. This is a non critical warning.
+Missing metadata for file /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output/logs/sub-P185_bids_complete.txt. Maybe metadata was deleted or it was created using an older version of Snakemake. This is a non critical warning.
+Missing metadata for file /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output/logs/sub-P197_bids_complete.txt. Maybe metadata was deleted or it was created using an older version of Snakemake. This is a non critical warning.
+Missing metadata for file /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output/tars/P141. Maybe metadata was deleted or it was created using an older version of Snakemake. This is a non critical warning.
+Missing metadata for file /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output/tars/P185. Maybe metadata was deleted or it was created using an older version of Snakemake. This is a non critical warning.
+Missing metadata for file /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output/tars/P197. Maybe metadata was deleted or it was created using an older version of Snakemake. This is a non critical warning.
+Report created.
