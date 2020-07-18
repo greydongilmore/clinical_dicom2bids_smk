@@ -1,3 +1,10 @@
+---
+tags: [Import-6100]
+title: Snakemake workflow꞉ clinical DICOMs to BIDS
+created: '2020-07-17T16:28:27.363Z'
+modified: '2020-07-18T04:01:21.018Z'
+---
+
 # Snakemake workflow: clinical DICOMs to BIDS
 
 ## Description
@@ -7,7 +14,7 @@ Snakemake workflow to convert a clinical dicom directory into BIDS structure.
 ## Requirements
 
 * dcm2niix (v1.0.20200427)
-* python requirements in `requirements.txt`:
+* python requirements (defined in `workflow/envs/mapping.yaml`):
     * pydicom>=1.0.2
     * setuptools>=39.2.0
     * extractCMRRPhysio>=0.1.1
@@ -26,6 +33,34 @@ sourcedata/
     ├── <sequence>/<dicom_files.dcm>
     └── <sequence>/<dicom_files.dcm>
 ```
+* `<subject>` is the identifier for the subject in the form `sub-001`, `sub-002` etc.
+* `<sequence>` is the directory for a specific imaging sequence and can be given any name
+
+## Operation dates
+
+One main feature of this clinical pipeline is that the final output is stored in three session directories for each subject:
+* **ses-presurg:** for imaging data aquired prior to the subjects surgery date
+* **ses-perisurg:** for imaging data aquired on the same day of the subjects surgery (generally MRI/CT with sterotactic frame)
+* **ses-postsurg:** for imaging data aquired the immediate day after the subjects surgery onwards
+
+To divide the imaging data into the three sessions, the operation date is required foreach subject. This date is attempted to be gleaned automatically assuming some type of intraoperative imaging is performed and the **SeriesDescription** and/or **StudyDescription** DICOM header tag includes an identifer that it was aquired intra-operatively. 
+
+If the operation date cannot be determined automatically you may provide a path to an `or_dates.tsv` file that has the operation dates for all subjects. 
+
+Here is an example of what this file should look like:
+
+| subject  | or_date   |
+|:---------|:-----------|
+| sub-001<img width="100"/>  | 2014_09_28<img width="100"/> |
+| sub-002  | 2018_03_26 |
+| sub-003  | n/a |
+
+If the operation date for a subject is unknown or the subject did not undergo surgery, you can put `n/a` under **or_date** for that subject. In this case, the output BIDS directory will contain only the `presurg` session for that subject (with all the imaging data stored there):
+
+```
+output/bids/sub-P001/
+  └── ses-presurg/anat/...
+```
 
 ## Setting up
 
@@ -33,7 +68,9 @@ sourcedata/
 
 Install Snakemake using [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html):
 
-    conda create -c bioconda -c conda-forge -n snakemake snakemake
+```sh
+conda create -c bioconda -c conda-forge -n snakemake snakemake
+```
 
 For installation details, see the [instructions in the Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
 
@@ -45,7 +82,9 @@ To clone a local copy of this repository to your system:
 git clone https://github.com/greydongilmore/sampleClinicalWorkflow.git
 ```
 
-#### Modify the configuration file
+### Step 3: Modify the configuration file
+
+#### file paths
 
 Edit the `config/config.yaml` file to include the paths to the following:
 
@@ -53,13 +92,45 @@ Edit the `config/config.yaml` file to include the paths to the following:
 
 |Variable   |Description        |
 |:----------|:------------------|
-| **dicom_dir** | full path to where the input dicom directory is stored   |
-| **out_dir**   | full path to where the pipeline should output the data   |
-| **heuristic**  | heudiconv template file to sort/name dicoms according to BIDS standard |
+| `dicom_dir`<img width="200"/> | full path to where the input dicom directory is stored   |
+| `out_dir`   | full path to where the pipeline should output the data   |
+| `heuristic`  | heudiconv template file to sort/name dicoms according to BIDS standard |
+| `or_dates_file` **[optional]** | path to the `or_dates.tsv` file with subject surgery dates |
 
 </center>
 
-### Step 3: Run the pipeline
+#### session determination
+
+How one medical center performs aquisition of imaging data around the surgery date will most likely differ from another medical center. Further, in many clinical cases a patient will undergo surgery more than once. Within this pipeline you are able to modify how `presurgery`, `perisurgery` and `postsurgery` are defined. Within the `config/config.yaml` you will notice the following settings under **session_calc**: 
+<center>
+
+|Variable   |Description        |
+|:----------|:------------------|
+| `periop` [default: 0]<img width="280"/> | number of days ± around surgery day that will deemed `perisurg` |
+| `dur_multi_surg` [default: -30]| in the event of multi patient surgery, the max num days before the follow-up surgery imaging data will be deemed `presurg`<sup>1</sup> |
+| `override_periop` [default: True]  | in the event an imaging study is deemed `perisurg` but it contains an **electrode** flag it will be moved to `postsurg` <sup>2</sup> |
+
+</center>
+
+* <sup>1</sup> the default value is quantified as 30 days before the subsequent surgery any imaging aquisitions will be sorted into the `presurg` session
+* <sup>2</sup> this may occur if the surgery occurs in the morning and a post-op imaging study is performed to localize implanted electrodes later the same day
+
+
+### Step 4: DICOM sort rules
+
+Depending on your dicom dataset you may need to create a sorting rule for your data. There are two points in the pipeline where the imaging headers are parsed:
+* within **dicom2tar** to create the Tarball archives
+* within **tar2bids** to create the BIDS filename conventions
+
+#### dicom2tar sort rule
+
+The default sort rule can be found in [workflow/scripts/dicom2tar/sort_rules.py](workflow/scripts/dicom2tar/sort_rules.py) and is the function **sort_rule_clinical**. This sort rule seperates the DICOM files based on image type (MRI/CT/fluoro) as well as scan date. Scan sessions occuring on different days are stored in different Tarball archives, even if they are the same image type. Depending on the clinical scanner used at your center and the information stored within the DICOM header tags you may need to add/substract from this sort rule.
+
+#### tar2bids sort rule
+
+The sort rule for **heudiconv** is called a **heuristic**. They provide a detailed description of the [heuristic and how to write your own](https://heudiconv.readthedocs.io/en/latest/heuristics.html). The default heuristic file within this pipeline can be found in [workflow/scripts/heudiconv/clinical_imaging.py](workflow/scripts/heudiconv/clinical_imaging.py). 
+
+### Step 5: Run the pipeline
 
 All the following commands should be run in the root of the directory.
 
@@ -93,9 +164,7 @@ The repository has the following scheme:
 ├── README.md
 ├── workflow
 │   ├── rules
-|   │   ├── dicom2tar.smk
-|   |   ├── tar2bids.smk
-|   │   └── cleanSessions.smk
+|   │   └── dicom2bids.smk
 │   ├── envs
 |   │   └── mapping.yaml
 │   ├── scripts
@@ -106,9 +175,8 @@ The repository has the following scheme:
 |   │   |   └── sort_rules.py
 |   |   ├── heudiconv               # heuristic file for clinical imaging
 |   │   |   ├── clinical_imaging.py 
-|   |   ├── post_tar2bids           # refactors heudiconv output into final BIDS structure
-|   │   |   ├── clean_sessions.py
-|   │   └── process_complete.py     # writes a log file when process completes
+|   |   └── post_tar2bids           # refactors heudiconv output into final BIDS structure
+|   │       └── clean_sessions.py
 |   └── Snakefile
 ├── config
 │   └── config.yaml
@@ -192,5 +260,3 @@ output/bids_final/sub-P185/
   ├── ses-postsurg/anat/...
   └── ses-presurg/anat/...
 ```
-
-
