@@ -1,10 +1,3 @@
----
-tags: [Import-6100]
-title: Snakemake workflow꞉ clinical DICOMs to BIDS
-created: '2020-07-17T16:28:27.363Z'
-modified: '2020-07-18T04:01:21.018Z'
----
-
 # Snakemake workflow: clinical DICOMs to BIDS
 
 ## Description
@@ -241,7 +234,7 @@ output/bids/sub-P185/
   └── ses-005/anat/...
 ```
 
-### Rule 03: post tar2bids cleanup
+### Rule 03: cleanSessions
 
 <center>
 
