@@ -13,7 +13,10 @@ import re
 from collections import OrderedDict
 import shutil
 
-debug = False
+
+class Namespace:
+	def __init__(self, **kwargs):
+		self.__dict__.update(kwargs)
 
 def sorted_nicely( l ):
 	convert = lambda text: int(text) if text.isdigit() else text
@@ -79,86 +82,99 @@ def make_bids_folders(subject_id, session_id, kind, output_path, make_dir, overw
 			os.makedirs(path)
 			
 	return path
-	
-def get_parser():
-	"""
-	Argument Parser
-	"""
-	from argparse import ArgumentParser
-	
-	parser = ArgumentParser(description=('Group bids sessions into clinically meaningful'))
-	
-	# Required arguments
-	g_req = parser.add_argument_group('required arguments')
-	g_req.add_argument('--output_dir', action='store', required=True, help='the directory with dicom data')
-	g_req.add_argument('--bids_fold', action='store', required=True, help='the directory with dicom data')
-	
-	return parser
+# config = {
+# 	'periop': 0,
+# 	'dur_multi_surg': -30,
+# 	'override_periop': True
+# 	}
+# args = Namespace(tar2bids_done = '/home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output/sub-P197_tar2bids.done', 
+# 				 output_dir=os.path.dirname('/home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output/sub-P197_tar2bids.done'), 
+# 				 or_dates_file='',
+# 				 bids_fold='/home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output/bids/sub-P197',
+# 				 num_subs=3, 
+# 				 ses_calc=config)
 
-if debug:
-	class Namespace:
-		def __init__(self, **kwargs):
-			self.__dict__.update(kwargs)
-	
-	output_dir = '/home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output'
-	bids_fold = '/home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output/bids/sub-P185'
-	
-	args = Namespace(output_dir=output_dir, bids_fold=bids_fold)
-	
-def main(args):
-	or_dates = pd.read_csv(os.path.join(args.output_dir, 'or_dates.tsv'), sep='\t')
-	
+def main():
+
+	args = Namespace(tar2bids_done = snakemake.input[0], output_dir=os.path.dirname(snakemake.input[0]), or_dates_file=snakemake.params[0], 
+				  bids_fold=snakemake.params[1],num_subs=snakemake.params[2], ses_calc=snakemake.params[3])
+
+	if not args.or_dates_file:
+		or_dates = pd.read_csv(os.path.join(args.output_dir, 'or_dates.tsv'), sep='\t')
+	else:
+		or_dates = pd.read_csv(args.or_dates_file, sep='\t')
+		
 	temp_dir = os.path.join(args.output_dir, 'bids_final')
 	if not os.path.exists(temp_dir):
 		os.mkdir(temp_dir)
 
-# 	bids_files = [x for x in os.listdir(os.path.dirname(args.bids_fold)) if os.path.isfile(os.path.join(bids_dir, x))]
-# 	for ifile in bids_files:
-# 		shutil.copyfile(os.path.join(bids_dir, ifile), os.path.join(temp_dir, ifile))
-		
+	# Check to see if this is the last subject complete, copy main BIDS files if so
+	check_status = [x for x in os.listdir(args.output_dir) if x.endswith('_dicom2bids.done')]
+	if len(check_status)==(args.num_subs)-1:
+		bids_files = [x for x in os.listdir(os.path.join(args.output_dir, 'bids')) if os.path.isfile(os.path.join(args.output_dir, 'bids', x))]
+		for ifile in bids_files:
+			if ifile == 'participants.tsv':
+				patient_tsv = pd.read_csv(os.path.join(args.output_dir, 'bids', 'participants.tsv'), sep='\t')
+				patient_tsv = patient_tsv.sort_values(by=['participant_id']).reset_index(drop=True)
+				patient_tsv.to_csv(os.path.join(temp_dir, ifile), sep='\t', index=False, na_rep='n/a', line_terminator="")
+			else:
+				shutil.copyfile(os.path.join(args.output_dir, 'bids', ifile), os.path.join(temp_dir, ifile))
+	
+	os.remove(args.tar2bids_done)
+
 	print('Converting subject {} ...'.format(os.path.basename(args.bids_fold)))
 	subject_or = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in or_dates[or_dates['subject']==os.path.basename(args.bids_fold).split('-')[1]]['or_date'].values] if x is not np.nan]
 	orig_sessions = sorted_nicely([x for x in os.listdir(args.bids_fold) if os.path.isdir(os.path.join(args.bids_fold, x)) and 'ses' in x])
 	
 	sessionDates = {'ses_num':[],'session':[]}
 	for ises in orig_sessions:
-		scans_tsv = [x for x in os.listdir(os.path.join(args.bids_fold, ises)) if x.endswith('scans.tsv')]
-		scans_data = pd.read_table(os.path.join(args.bids_fold, ises, scans_tsv[0]))
-		idate = datetime.datetime.strptime(scans_data['acq_time'].values[0].split('T')[0], '%Y-%m-%d')
-		dateAdded = False
-		for ior in subject_or:
-			if dateAdded:
-				if 'postsurg' in sessionDates['session'][-1]:
-					if (idate-ior).days == 0:
-						postop_scan=False
-						for root, folders, files in os.walk(os.path.join(args.bids_fold, ises)):
-							for file in files:
-								if 'electrode' in file.lower():
-									postop_scan = True
-						if postop_scan:
-							sessionDates['session'][-1]='postsurg'
-						else:
-							sessionDates['session'][-1]='perisurg'
-					elif -30<(idate-ior).days < 0:
-						sessionDates['session'][-1]='presurg'
-			else:
-				sessionDates['ses_num'].append(ises)
-				if (idate-ior).days > 0:
-					sessionDates['session'].append('postsurg')
-				elif (idate-ior).days == 0:
-					postop_scan=False
-					for root, folders, files in os.walk(os.path.join(args.bids_fold, ises)):
-						for file in files:
-							if 'electrode' in file.lower():
-								postop_scan = True
-					if postop_scan:
+		if not subject_or:
+			sessionDates['ses_num'].append(ises)
+			sessionDates['session'].append('presurg')
+		else:
+			scans_tsv = [x for x in os.listdir(os.path.join(args.bids_fold, ises)) if x.endswith('scans.tsv')]
+			scans_data = pd.read_table(os.path.join(args.bids_fold, ises, scans_tsv[0]))
+			idate = datetime.datetime.strptime(scans_data['acq_time'].values[0].split('T')[0], '%Y-%m-%d')
+			dateAdded = False
+			for ior in subject_or:
+				if dateAdded:
+					if 'postsurg' in sessionDates['session'][-1]:
+						if abs((idate-ior).days) <= args.ses_calc['periop']:
+							postop_scan=False
+							if args.ses_calc['override_periop']:
+								for root, folders, files in os.walk(os.path.join(args.bids_fold, ises)):
+									for file in files:
+										if 'electrode' in file.lower():
+											postop_scan = True
+
+							if postop_scan:
+								sessionDates['session'][-1]='postsurg'
+							else:
+								sessionDates['session'][-1]='perisurg'
+
+						elif args.ses_calc['dur_multi_surg'] < (idate-ior).days < 0:
+							sessionDates['session'][-1]='presurg'
+				else:
+					sessionDates['ses_num'].append(ises)
+					if (idate-ior).days > 0:
 						sessionDates['session'].append('postsurg')
-					else:
-						sessionDates['session'].append('perisurg')
+					elif abs((idate-ior).days) <= args.ses_calc['periop']:
+						postop_scan=False
+						if args.ses_calc['override_periop']:
+							for root, folders, files in os.walk(os.path.join(args.bids_fold, ises)):
+								for file in files:
+									if 'electrode' in file.lower():
+										postop_scan = True
+
+						if postop_scan:
+							sessionDates['session'].append('postsurg')
+						else:
+							sessionDates['session'].append('perisurg')
+							
+					elif (idate-ior).days < 0:
+						sessionDates['session'].append('presurg')
 						
-				elif (idate-ior).days < 0:
-					sessionDates['session'].append('presurg')
-				dateAdded=True
+					dateAdded=True
 		
 	sessionDates = pd.DataFrame.from_dict(sessionDates)
 	isub = os.path.basename(args.bids_fold)
@@ -210,8 +226,6 @@ def main(args):
 		scans_tsv_new.to_csv(scans_file, sep='\t', index=False, na_rep='n/a', line_terminator="")
 				
 if __name__ == "__main__":
-	
-	args = get_parser().parse_args()
-	
-	main(args)
+
+	main()
 			

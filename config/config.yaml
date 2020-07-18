@@ -1,4 +1,11 @@
 
-dicom_dir: /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/dicoms
-out_dir: /home/greydon/Documents/GitHub/sampleClinicalWorkflow/data/output
-heuristic: /home/greydon/Documents/GitHub/sampleClinicalWorkflow/workflow/scripts/heudiconv/clinical_imaging.py
+dicom_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/dicoms
+out_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output
+heuristic: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/workflow/scripts/heudiconv/clinical_imaging.py
+or_dates_file:
+
+# Session determination
+session_calc:
+  periop: 0
+  dur_multi_surg: -30
+  override_periop: True

@@ -281,29 +281,30 @@ def sort_rule_clinical(filename, args):
                     # --- INTRAOP X-RAY determination
                     if any(substring in modality for substring in {'Intraoperative', 'Skull', 'XA', 'RF','CR','OT'}):
                         if 'CR' not in dataset.Modality:
-                            or_date = dataset.StudyDate[0:4] + '_' + \
-                                dataset.StudyDate[4:6] + \
-                                '_' + dataset.StudyDate[6:8]
-                            orDateTemp = "\t".join(
-                                ['P' + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], or_date])
-                            
-                            if os.path.exists(or_dates_file):
-                                with open(or_dates_file, 'r') as readFile:
-                                    reader = csv.reader(
-                                        readFile, delimiter='\t')
-                                    lines = list(reader)
-                                if orDateTemp.split('\t') not in lines:
-                                    with open(or_dates_file, 'a') as writeFile:
+                            if not args.get_or_dates:
+                                or_date = dataset.StudyDate[0:4] + '_' + \
+                                    dataset.StudyDate[4:6] + \
+                                    '_' + dataset.StudyDate[6:8]
+                                orDateTemp = "\t".join(
+                                    ['P' + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], or_date])
+                                
+                                if os.path.exists(or_dates_file):
+                                    with open(or_dates_file, 'r') as readFile:
+                                        reader = csv.reader(
+                                            readFile, delimiter='\t')
+                                        lines = list(reader)
+                                    if orDateTemp.split('\t') not in lines:
+                                        with open(or_dates_file, 'a') as writeFile:
+                                            writeFile.write(orDateTemp)
+                                            writeFile.write("\n")
+                                else:
+                                    with open(or_dates_file, 'w') as writeFile:
+                                        writeFile.write(
+                                            "\t".join(['subject', 'or_date']))
+                                        writeFile.write("\n")
                                         writeFile.write(orDateTemp)
                                         writeFile.write("\n")
-                            else:
-                                with open(or_dates_file, 'w') as writeFile:
-                                    writeFile.write(
-                                        "\t".join(['subject', 'or_date']))
-                                    writeFile.write("\n")
-                                    writeFile.write(orDateTemp)
-                                    writeFile.write("\n")
-                            return None
+                                return None
 
                         elif all(['CR' in dataset.Modality, any(x in dataset.StudyDescription for x in {'Skull Routine Portable', 'Intraoperative Portable'})]):
                             errorInfoTemp = "\t".join(['P' + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], study_date,

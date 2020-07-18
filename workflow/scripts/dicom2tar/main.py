@@ -32,8 +32,11 @@ import clinical_helpers as ch
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s -%(message)s')
 
+class Namespace:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
 
-def main(dicom_dir, output_dir, args):
+def main():
     '''
     use DicomSorter sort or tar CFMM's dicom data
 
@@ -42,14 +45,16 @@ def main(dicom_dir, output_dir, args):
         output_dir: output sorted or tar files to this folder
     '''
 
+    args = Namespace(dicom_dir=snakemake.input[0], output_dir=snakemake.output[0], clinical_scans=True, get_or_dates = snakemake.params[0])
+
     logger = logging.getLogger(__name__)
 
-    if not os.path.exists(dicom_dir):
-        logger.error("{} not exist!".format(dicom_dir))
+    if not os.path.exists(args.dicom_dir):
+        logger.error("{} not exist!".format(args.dicom_dir))
         return False
     
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
                 
     ######
     # CFMM sort rule
@@ -57,7 +62,7 @@ def main(dicom_dir, output_dir, args):
     try:
         if not args.clinical_scans:
 
-            with DicomSorter.DicomSorter(dicom_dir, sort_rules.sort_rule_CFMM, output_dir, args) as d:
+            with DicomSorter.DicomSorter(sort_rules.sort_rule_CFMM, args) as d:
                 # #######
                 # # sort
                 # #######
@@ -78,7 +83,7 @@ def main(dicom_dir, output_dir, args):
             # ######
             # # demo sort rule
             # ######
-            # with DicomSorter.DicomSorter(dicom_dir, sort_rules.sort_rule_demo, output_dir) as d:
+            # with DicomSorter.DicomSorter(args.dicom_dir, sort_rules.sort_rule_demo, output_dir) as d:
             #     # sort
             #     sorted_dirs = d.sort()
             #     #logging
@@ -98,7 +103,7 @@ def main(dicom_dir, output_dir, args):
             ######
             logger.info("These are clinical scans.")
             
-            with DicomSorter.DicomSorter(dicom_dir, sort_rules.sort_rule_clinical, output_dir, args) as d:
+            with DicomSorter.DicomSorter(sort_rules.sort_rule_clinical, args) as d:
                 # if os.path.exists(os.path.join(args.output_dir, 'errorInfo.tsv')):
                 #     os.remove(os.path.join(args.output_dir, 'errorInfo.tsv'))
                 # if os.path.exists(os.path.join(args.output_dir, 'or_dates.tsv')):
@@ -116,29 +121,6 @@ def main(dicom_dir, output_dir, args):
     except Exception as e:
         logger.exception(e)
 
-
-def run():
-
-    # arg parser
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("dicom_dir")
-    parser.add_argument('output_dir')
-    parser.add_argument("--clinical_scans", action="store_true")
-    parser.add_argument("--StudyDescription",
-                        nargs='?', default='PI^Project')
-    parser.add_argument("--StudyDate",
-                        nargs='?', default='19000101')
-    parser.add_argument("--PatientName",
-                        nargs='?', default='Anonymous')
-    args = parser.parse_args()
-
-    dicom_dir = args.dicom_dir
-    output_dir = args.output_dir
-
-    # main
-    main(dicom_dir, output_dir, args)
-
-
 if __name__ == "__main__":
-    run()
+
+    main()

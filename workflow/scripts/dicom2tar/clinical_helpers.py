@@ -17,8 +17,9 @@ def tarSession(args):
 	output_dir = os.path.dirname(os.path.dirname(args.output_dir))
 	tar_files = [f for f in os.listdir(args.output_dir) if f.endswith('.tar')]
 	subjects = np.unique([x.split('_')[0] for x in tar_files])
-	# or_dates = None
-	if os.path.exists(os.path.join(output_dir, 'or_dates.tsv')):
+
+
+	if os.path.exists(os.path.join(output_dir, 'or_dates.tsv')) and not args.get_or_dates:
 		or_dates = pd.read_csv(os.path.join(output_dir, 'or_dates.tsv'), sep='\t')
 		or_dates = or_dates.sort_values(by=['subject']).reset_index(drop=True)
 		or_dates.to_csv(os.path.join(output_dir, 'or_dates.tsv'), sep='\t', index=False, na_rep='n/a', line_terminator="")

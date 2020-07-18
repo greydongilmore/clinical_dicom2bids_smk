@@ -55,16 +55,14 @@ class DicomSorter():
 
     '''
 
-    def __init__(self, dicom_dir, sort_rule_function, output_dir, args,
+    def __init__(self, sort_rule_function, args,
                  extract_to_dir='', dicomunwrap_path='dicomunwrap', simens_cmrr_mb_unwrap_path='extractCMRRPhysio'):
         '''
         init DicomSorter
         '''
         self.logger = logging.getLogger(__name__)
         self._compressed_exts = ('.tar', '.tgz', '.tar.gz', '.tar.bz2', '.zip')
-        self.dicom_dir = dicom_dir
         self.sort_rule_function = sort_rule_function
-        self.output_dir = output_dir
         self.args = args
 
         # extract_to_dir, default is platform's tmp dir
@@ -175,10 +173,10 @@ class DicomSorter():
         # extract compressed files if any
         ######
         self._walk_and_extract(
-            self.dicom_dir, self._compressed_exts, self._extract_to_dir_uniq)
+            self.args.dicom_dir, self._compressed_exts, self._extract_to_dir_uniq)
 
         # add _extract_to_dir_uniq directory in the search directories
-        dicom_dirs = [self.dicom_dir, self._extract_to_dir_uniq]
+        dicom_dirs = [self.args.dicom_dir, self._extract_to_dir_uniq]
 
         ######
         # walk and apply sort rule
@@ -201,12 +199,12 @@ class DicomSorter():
 
             # only the first element, example: PI
             sorted_dir = os.path.join(
-                self.output_dir, relative_path_new_filename.split(os.sep)[0])
+                self.args.output_dir, relative_path_new_filename.split(os.sep)[0])
             if sorted_dir not in sorted_dirs:
                 sorted_dirs.append(sorted_dir)
 
             full_path_new_full_filename = os.path.join(
-                self.output_dir, relative_path_new_filename)
+                self.args.output_dir, relative_path_new_filename)
             dest_dir = os.path.dirname(full_path_new_full_filename)
             if not os.path.exists(dest_dir):
                 os.makedirs(dest_dir)
@@ -255,10 +253,10 @@ class DicomSorter():
         # extract compressed files if any
         ######
         self._walk_and_extract(
-            self.dicom_dir, self._compressed_exts, self._extract_to_dir_uniq)
+            self.args.dicom_dir, self._compressed_exts, self._extract_to_dir_uniq)
 
         # add _extract_to_dir_uniq directory in the search directories
-        dicom_dirs = [self.dicom_dir, self._extract_to_dir_uniq]
+        dicom_dirs = [self.args.dicom_dir, self._extract_to_dir_uniq]
 
         ######
         # walk and apply sort rule
@@ -293,7 +291,7 @@ class DicomSorter():
             dir_split = relative_path_new_filename.split(os.sep)
 
             tar_filename = tar_filename_sep.join(dir_split[:depth])+".tar"
-            tar_full_filename = os.path.join(self.output_dir, tar_filename)
+            tar_full_filename = os.path.join(self.args.output_dir, tar_filename)
             tar_full_filename_dict[tar_full_filename].append(item)
 
         for tar_full_filename, items in tar_full_filename_dict.items():
@@ -319,7 +317,7 @@ class DicomSorter():
                 attached_tar_filename = tar_filename_sep.join(
                     dir_split[:depth])+".attached.tar"
                 attached_tar_full_filename = os.path.join(
-                    self.output_dir, attached_tar_filename)
+                    self.args.output_dir, attached_tar_filename)
 
                 tar_arcname = relative_path_new_filename + "_unwraped"
 
