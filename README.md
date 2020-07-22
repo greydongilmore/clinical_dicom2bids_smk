@@ -1,10 +1,3 @@
----
-tags: [Import-6100]
-title: Snakemake workflow꞉ clinical DICOMs to BIDS
-created: '2020-07-17T16:28:27.363Z'
-modified: '2020-07-22T22:33:51.967Z'
----
-
 # Snakemake workflow: clinical DICOMs to BIDS
 
 ## Description
