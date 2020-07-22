@@ -23,16 +23,19 @@ The input directory with dicoms should be setup as follows:
 
 data/
 ├── dicoms/
-|   ├── <subject>/
-|   ├── <sequence>/<dicom_files.dcm>
-|   ├── <sequence>/<dicom_files.dcm>
-|   └── <sequence>/<dicom_files.dcm>
+│   ├── <subject>/
+│   ├── <sequence>/<dicom_files.dcm>
+│   ├── <sequence>/<dicom_files.dcm>
+│   └── <sequence>/<dicom_files.dcm>
 └── output/
 
 ```
 
-* `<subject>` is the identifier for the subject in the form `sub-001`, `sub-002` etc.
-* `<sequence>` is the directory for a specific imaging sequence and can be given any name
+* `data` the main working directory, the path to this directory is passed to the `docker run` command
+* `dicoms` directory that stores the source DICOM files
+   * `<subject>` is the identifier for the subject in the form `sub-001`, `sub-002` etc.
+   * `<sequence>` is the directory for a specific imaging sequence and can be given any name
+* `output` directory will store all outputs from the pipeline
 
 ## Operation dates
 
@@ -66,7 +69,7 @@ output/bids/sub-P001/
 
 #### file paths
 
-Edit the `config/config.yaml` file to include the paths to the following:
+If you are running this pipeline locally, edit the `config/config.yaml` file to include the paths to the following:
 
 <center>
 
@@ -78,6 +81,8 @@ Edit the `config/config.yaml` file to include the paths to the following:
 | `or_dates_file` **[optional]** | path to the `or_dates.tsv` file with subject surgery dates |
 
 </center>
+
+If you modify the `config_docker.yml` file, the  docker image will need to be rebuilt. Preferably leave this configuration as set and pass input arguments to the `docker run` command to modify data paths (see Docker section below).
 
 #### session determination
 
@@ -94,7 +99,6 @@ How one medical center performs aquisition of imaging data around the surgery da
 
 * <sup>1</sup> the default value is quantified as 30 days before the subsequent surgery any imaging aquisitions will be sorted into the `presurg` session
 * <sup>2</sup> this may occur if the surgery occurs in the morning and a post-op imaging study is performed to localize implanted electrodes later the same day
-
 
 ### DICOM sort rules
 
@@ -207,19 +211,19 @@ To run the the pipeline in Docker, you will first need to install Docker.
 
 2. To setup the container in your system, run the following command in the root directory:
 
-    ```sh
-    # build the composition in `docker-compose.yml`
-    docker-compose build
-    ```
+   ```sh
+   # build the composition in `docker-compose.yml`
+   docker-compose build
+   ```
 
-    ```sh
-    # run the container
-    docker-compose up -d
-    ```
-    * `build` builds the image
-    * `up` builds the image if the image do not exist and starts the container
-        * `--build` if you add this input argument then images will be built even when not needed (i.e. previous built container exists)
-    * `d` starts the container in detached mode so it will run in the background
+   ```sh
+   # run the container
+   docker-compose up -d
+   ```
+  * `build` builds the image
+  * `up` builds the image if the image do not exist and starts the container
+    * `--build` if you add this input argument then images will be built even when not needed (i.e. previous built container exists)
+  * `d` starts the container in detached mode so it will run in the background
 
 3. If you run `docker images ls` in the terminal you will also notice the built image `d2b-clinical_image`. Now if you type `docker ps -a`, you should see the corresponding container named `d2b-clinical`.
 
@@ -268,23 +272,23 @@ All the following commands should be run in the root of the directory.
 
 1. Active the conda environment by running:
 
-```sh
-conda activate snakemake
-```
+   ```sh
+   conda activate snakemake
+   ```
 
 2. Prior to running you can do a dry run:
 
-```sh
-snakemake --use-conda -n
-```
+   ```sh
+   snakemake --use-conda -n
+   ```
 
 3. To locally run the pipeline, run the following:
 
-```sh
-snakemake --use-conda -j $N
-```
+   ```sh
+   snakemake --use-conda -j $N
+   ```
 
-where `$N` specifices the number of cores to use.
+   where `$N` specifices the number of cores to use.
 
 
 ## Description of the pipeline
