@@ -1,8 +1,8 @@
 
-dicom_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/dicoms
-out_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output
+dicom_dir: /media/veracrypt6/projects/stealthMRI/working_dir/dicoms
+out_dir: /media/veracrypt6/projects/stealthMRI/working_dir/out
 heuristic: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/workflow/scripts/heudiconv/clinical_imaging.py
-or_dates_file:
+or_dates_file: 
 
 # Session determination
 session_calc:

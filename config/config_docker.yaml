@@ -1,0 +1,11 @@
+
+dicom_dir: /data/dicoms
+out_dir: /data/output
+heuristic: /d2b-clinical/workflow/scripts/heudiconv/clinical_imaging.py
+or_dates_file: 
+
+# Session determination
+session_calc:
+  periop: 0
+  dur_multi_surg: -30
+  override_periop: True

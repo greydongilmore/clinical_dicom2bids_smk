@@ -1,3 +1,10 @@
+---
+tags: [Import-6100]
+title: Snakemake workflow꞉ clinical DICOMs to BIDS
+created: '2020-07-17T16:28:27.363Z'
+modified: '2020-07-22T22:33:51.967Z'
+---
+
 # Snakemake workflow: clinical DICOMs to BIDS
 
 ## Description
@@ -18,14 +25,19 @@ Snakemake workflow to convert a clinical dicom directory into BIDS structure.
 ## Input directory structure
 
 The input directory with dicoms should be setup as follows:
+
 ```sh
 
-sourcedata/
-└── <subject>/
-    ├── <sequence>/<dicom_files.dcm>
-    ├── <sequence>/<dicom_files.dcm>
-    └── <sequence>/<dicom_files.dcm>
+data/
+├── dicoms/
+|   ├── <subject>/
+|   ├── <sequence>/<dicom_files.dcm>
+|   ├── <sequence>/<dicom_files.dcm>
+|   └── <sequence>/<dicom_files.dcm>
+└── output/
+
 ```
+
 * `<subject>` is the identifier for the subject in the form `sub-001`, `sub-002` etc.
 * `<sequence>` is the directory for a specific imaging sequence and can be given any name
 
@@ -55,27 +67,9 @@ output/bids/sub-P001/
   └── ses-presurg/anat/...
 ```
 
-## Setting up
+## Configuration
 
-### Step 1: Install Snakemake
-
-Install Snakemake using [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html):
-
-```sh
-conda create -c bioconda -c conda-forge -n snakemake snakemake
-```
-
-For installation details, see the [instructions in the Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
-
-### Step 2: Clone a copy of this repository
-
-To clone a local copy of this repository to your system:
-
-```sh
-git clone https://github.com/greydongilmore/sampleClinicalWorkflow.git
-```
-
-### Step 3: Modify the configuration file
+### Modify the configuration file
 
 #### file paths
 
@@ -109,7 +103,7 @@ How one medical center performs aquisition of imaging data around the surgery da
 * <sup>2</sup> this may occur if the surgery occurs in the morning and a post-op imaging study is performed to localize implanted electrodes later the same day
 
 
-### Step 4: DICOM sort rules
+### DICOM sort rules
 
 Depending on your dicom dataset you may need to create a sorting rule for your data. There are two points in the pipeline where the imaging headers are parsed:
 * within **dicom2tar** to create the Tarball archives
@@ -122,6 +116,158 @@ The default sort rule can be found in [workflow/scripts/dicom2tar/sort_rules.py]
 #### tar2bids sort rule
 
 The sort rule for **heudiconv** is called a **heuristic**. They provide a detailed description of the [heuristic and how to write your own](https://heudiconv.readthedocs.io/en/latest/heuristics.html). The default heuristic file within this pipeline can be found in [workflow/scripts/heudiconv/clinical_imaging.py](workflow/scripts/heudiconv/clinical_imaging.py). 
+
+## Run with Docker
+
+To run the the pipeline in Docker, you will first need to install Docker.
+
+### Docker Installation
+
+#### Linux
+
+1. Update the `apt` package index and install packages to allow `apt` to use a repository over HTTPS:
+
+    ```sh
+    sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+    ```
+
+2. Add Docker’s official GPG key:
+
+    ```sh
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    ```
+
+3. Use the following command to set up the stable repository:
+
+    ```sh
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+       $(lsb_release -cs) stable"
+    ```
+
+4. Install the latest version of Docker Engine and containerd:
+
+    ```sh
+    sudo apt-get install docker-ce docker-ce-cli containerd.io
+    ```
+
+5. Verify that Docker Engine is installed correctly by running the hello-world image:
+
+    ```sh
+    sudo docker run hello-world
+    ```
+
+6. **Docker-compose** is a tool for defining and running multi-container Docker applications. With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration. Run this command to download the current stable release of Docker Compose:
+
+    ```sh
+    sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" \
+        -o /usr/local/bin/docker-compose
+    ```
+
+7. Apply executable permissions to the binary:
+
+    ```sh
+    sudo chmod +x /usr/local/bin/docker-compose
+    ```
+
+8. **[optional]** To run Docker without `sudo`:
+
+    ```sh
+    # Create the Docker group
+    sudo groupadd docker
+
+    #Add your user to the docker group
+    sudo usermod -aG docker $USER
+    ```
+
+9. You will need to log out and log back in so that your group membership is re-evaluated.
+
+#### MacOS
+
+1. Download the <a href="https://download.docker.com/mac/stable/Docker.dmg">`Docker.dmg`</a> file.
+
+2. Double-click `Docker.dmg` to open the installer, then drag the Docker icon to the Applications folder.
+
+3. Double-click `Docker.app` in the Applications folder to start Docker.
+
+
+#### Windows
+
+1. Download the <a href="https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe">`Docker.dmg`</a> file.
+
+2. Double-click `Docker Desktop Installer.exe` to run the installer.
+
+3. When prompted, ensure the **Enable Hyper-V Windows Features** option is selected on the Configuration page.
+
+4. Follow the instructions on the installation wizard to authorize the installer and proceed with the install.
+
+5. When the installation is successful, click **Close** to complete the installation process.
+
+6. If your admin account is different to your user account, you must add the user to the **docker-users** group. Run **Computer Management** as an administrator and navigate to **Local Users and Groups > Groups > docker-users**. Right-click to add the user to the group. Log out and log back in for the changes to take effect.
+
+### Docker Setup
+
+1. Clone this repository to your system:
+
+    ```sh
+    git clone https://github.com/greydongilmore/clinical_dicom2bids_smk.git
+    ```
+
+2. To setup the container in your system, run the following command in the root directory:
+
+    ```sh
+    # build the composition in `docker-compose.yml`
+    docker-compose build
+    ```
+
+    ```sh
+    # run the container
+    docker-compose up -d
+    ```
+    * `build` builds the image
+    * `up` builds the image if the image do not exist and starts the container
+        * `--build` if you add this input argument then images will be built even when not needed (i.e. previous built container exists)
+    * `d` starts the container in detached mode so it will run in the background
+
+3. If you run `docker images ls` in the terminal you will also notice the built image `d2b-clinical_image`. Now if you type `docker ps -a`, you should see the corresponding container named `d2b-clinical`.
+
+4. Now you can run the built image using the following default command:
+
+    ```sh
+    # Start the instance
+    docker run -it --rm d2b-clinical_image bash
+    ```
+
+4. Inside the container the main directory will be located at `/d2b-clinical`. By default the data directory is the one found in this repository (it is copied to the Docker image when building). Inside the container, the test DICOMs are stored in `/data/dicoms` and the default output will be `/data/output`. You can test the Docker instance by running the following (in the root of `/d2b-clinical`):
+
+    ```sh
+    #Run the Snakemake pipline
+    snakemake -j4
+    ```
+
+5. To link your dataset to the container you need to map the data path within the `docker run` command. Ensure your input path has the structure outline above (in the example the path supplied here would be `*/data):
+
+    ```sh
+    docker run -v <path-to-data-dir>:/data -it --rm d2b-clinical_image bash
+    ```
+
+6. Now when you run Snakemake the data ouput will appear at your specified path `output` directory.
+
+## Run Locally
+
+1. Install Snakemake using [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html):
+
+    ```sh
+    conda create -c bioconda -c conda-forge -n snakemake snakemake
+    ```
+
+    For installation details, see the [instructions in the Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
+
+2. Clone a copy of this repository to your system:
+
+    ```sh
+    git clone https://github.com/greydongilmore/clinical_dicom2bids_smk.git
+    ```
+
 
 ### Step 5: Run the pipeline
 
@@ -234,7 +380,7 @@ output/bids/sub-P185/
   └── ses-005/anat/...
 ```
 
-### Rule 03: cleanSessions
+### Rule 03: post tar2bids cleanup
 
 <center>
 
