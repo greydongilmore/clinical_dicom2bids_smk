@@ -227,27 +227,29 @@ To run the the pipeline in Docker, you will first need to install Docker.
 
 3. If you run `docker images ls` in the terminal you will also notice the built image `d2b-clinical_image`. Now if you type `docker ps -a`, you should see the corresponding container named `d2b-clinical`.
 
-4. Now you can run the built image using the following default command:
+### Docker run
+
+1. Now you can run the built image using the following default command:
 
     ```sh
     # Start the instance
     docker run -it --rm d2b-clinical_image bash
     ```
 
-4. Inside the container the main directory will be located at `/d2b-clinical`. By default the data directory is the one found in this repository (it is copied to the Docker image when building). Inside the container, the test DICOMs are stored in `/data/dicoms` and the default output will be `/data/output`. You can test the Docker instance by running the following (in the root of `/d2b-clinical`):
+2. Inside the container the main directory will be located at `/d2b-clinical`. By default the data directory is the one found in this repository (it is copied to the Docker image when building). Inside the container, the test DICOMs are stored in `/data/dicoms` and the default output will be `/data/output`. You can test the Docker instance by running the following (in the root of `/d2b-clinical`):
 
     ```sh
     #Run the Snakemake pipline
     snakemake -j4
     ```
 
-5. To link your dataset to the container you need to map the data path within the `docker run` command. Ensure your input path has the structure outline above (in the example the path supplied here would be `*/data):
+3. To link your dataset to the container you need to map the data path within the `docker run` command. Ensure your input path has the structure outline above (in the example the path supplied here would be `*/data):
 
     ```sh
     docker run -v <path-to-data-dir>:/data -it --rm d2b-clinical_image bash
     ```
 
-6. Now when you run Snakemake the data ouput will appear at your specified path `output` directory.
+4. Now when you run Snakemake the data ouput will appear at your specified path `output` directory.
 
 ## Run Locally
 
@@ -266,7 +268,7 @@ To run the the pipeline in Docker, you will first need to install Docker.
     ```
 
 
-### Step 5: Run the pipeline
+### Local run
 
 All the following commands should be run in the root of the directory.
 
