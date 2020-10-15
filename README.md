@@ -8,6 +8,7 @@ Snakemake workflow to convert a clinical dicom directory into BIDS structure.
 
 * dcm2niix (v1.0.20200427)
 * python requirements (defined in `workflow/envs/mapping.yaml`):
+    * snakemake>=5.23.0
     * pydicom>=1.0.2
     * setuptools>=39.2.0
     * extractCMRRPhysio>=0.1.1
@@ -23,10 +24,10 @@ The input directory with dicoms should be setup as follows:
 
 data/
 ├── dicoms/
-│   ├── <subject>/
-│   ├── <sequence>/<dicom_files.dcm>
-│   ├── <sequence>/<dicom_files.dcm>
-│   └── <sequence>/<dicom_files.dcm>
+│   └── <subject>/
+│        ├── <sequence>/<dicom_files.dcm>
+│        ├── <sequence>/<dicom_files.dcm>
+│        └── <sequence>/<dicom_files.dcm>
 └── output/
 
 ```
