@@ -24,10 +24,10 @@ The input directory with dicoms should be setup as follows:
 
 data/
 ├── dicoms/
-│   ├── <subject>/
-│   ├── <sequence>/<dicom_files.dcm>
-│   ├── <sequence>/<dicom_files.dcm>
-│   └── <sequence>/<dicom_files.dcm>
+│   └── <subject>/
+│        ├── <sequence>/<dicom_files.dcm>
+│        ├── <sequence>/<dicom_files.dcm>
+│        └── <sequence>/<dicom_files.dcm>
 └── output/
 
 ```
