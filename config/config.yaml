@@ -1,8 +1,12 @@
 
-dicom_dir: /media/veracrypt6/projects/stealthMRI/working_dir/dicoms
-out_dir: /media/veracrypt6/projects/stealthMRI/working_dir/out
-heuristic: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/workflow/scripts/heudiconv/clinical_imaging.py
-or_dates_file: 
+dicom_dir: /media/veracrypt6/projects/iEEG/working_dir/dicoms
+out_dir: /media/veracrypt6/projects/iEEG/working_dir/out
+
+heuristic: resources/heuristics/clinical_imaging.py
+
+or_dates_file:
+
+dcm_config: resources/dcm_config.json
 
 # Session determination
 session_calc:

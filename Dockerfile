@@ -18,7 +18,7 @@ RUN apt-get update && apt-get upgrade -y && \
 # Python dependencies
 RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install snakemake mne-bids numpy scipy mne \
-	dicom2nifti pydicom extractCMRRPhysio dcmstack pandas heudiconv
+	dicom2nifti pydicom dcmstack pandas heudiconv
 
 
 ################### dcm2niix ###################
@@ -53,9 +53,9 @@ RUN npm i -g bids-validator
 
 ############# KEEP BELOW SYSTEM LEVEL INSTALLS #############
 # setup working directories
-WORKDIR /d2b-clinical
+#WORKDIR /d2b-clinical
 
 # copy over data files
-COPY ./data /data
-COPY ./workflow /d2b-clinical/workflow
-COPY ./config/config_docker.yaml /d2b-clinical/config/config.yaml
+#COPY ./data /data
+#COPY ./workflow /d2b-clinical/workflow
+#COPY ./config/config_docker.yaml /d2b-clinical/config/config.yaml

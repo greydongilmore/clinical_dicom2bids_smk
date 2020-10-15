@@ -21,7 +21,7 @@ import subprocess
 from collections import defaultdict
 
 import pydicom
-import extractCMRRPhysio
+
 
 
 class DicomSorter():
@@ -56,7 +56,7 @@ class DicomSorter():
     '''
 
     def __init__(self, sort_rule_function, args,
-                 extract_to_dir='', dicomunwrap_path='dicomunwrap', simens_cmrr_mb_unwrap_path='extractCMRRPhysio'):
+                 extract_to_dir='', dicomunwrap_path='dicomunwrap'):
         '''
         init DicomSorter
         '''
@@ -87,7 +87,6 @@ class DicomSorter():
 
         self.dicomunwrap_path = dicomunwrap_path
 
-        self.simens_cmrr_mb_unwrap_path = simens_cmrr_mb_unwrap_path
 
     def _generate_uniq_string(self):
         '''
@@ -138,17 +137,6 @@ class DicomSorter():
                     '--decompress'
 
                 subprocess.check_call(cmd, shell=True)
-                return output_directory
-
-            elif is_siemens_CMRR_MB_sequance:
-                # unwrap command:
-                # python extract_cmrr_physio.py  /path/to/file.dcm /out/dir
-                cmd = '{} '.format(self.simens_cmrr_mb_unwrap_path) +\
-                    '{} '.format(filename) +\
-                    '{} '.format(output_directory)
-
-                subprocess.check_call(cmd, shell=True)
-
                 return output_directory
 
             else:

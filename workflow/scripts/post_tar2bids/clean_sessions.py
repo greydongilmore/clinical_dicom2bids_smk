@@ -104,21 +104,21 @@ def main():
 	else:
 		or_dates = pd.read_csv(args.or_dates_file, sep='\t')
 		
-	temp_dir = os.path.join(args.output_dir, 'bids_final')
-	if not os.path.exists(temp_dir):
-		os.mkdir(temp_dir)
+	final_dir = os.path.join(args.output_dir, 'bids')
+	if not os.path.exists(final_dir):
+		os.mkdir(final_dir)
 
 	# Check to see if this is the last subject complete, copy main BIDS files if so
 	check_status = [x for x in os.listdir(args.output_dir) if x.endswith('_dicom2bids.done')]
 	if len(check_status)==(args.num_subs)-1:
-		bids_files = [x for x in os.listdir(os.path.join(args.output_dir, 'bids')) if os.path.isfile(os.path.join(args.output_dir, 'bids', x))]
+		bids_files = [x for x in os.listdir(os.path.join(args.output_dir, 'bids_tmp')) if os.path.isfile(os.path.join(args.output_dir, 'bids_tmp', x))]
 		for ifile in bids_files:
 			if ifile == 'participants.tsv':
-				patient_tsv = pd.read_csv(os.path.join(args.output_dir, 'bids', 'participants.tsv'), sep='\t')
+				patient_tsv = pd.read_csv(os.path.join(args.output_dir, 'bids_tmp', 'participants.tsv'), sep='\t')
 				patient_tsv = patient_tsv.sort_values(by=['participant_id']).reset_index(drop=True)
-				patient_tsv.to_csv(os.path.join(temp_dir, ifile), sep='\t', index=False, na_rep='n/a', line_terminator="")
+				patient_tsv.to_csv(os.path.join(final_dir, ifile), sep='\t', index=False, na_rep='n/a', line_terminator="")
 			else:
-				shutil.copyfile(os.path.join(args.output_dir, 'bids', ifile), os.path.join(temp_dir, ifile))
+				shutil.copyfile(os.path.join(args.output_dir, 'bids_tmp', ifile), os.path.join(final_dir, ifile))
 	
 	os.remove(args.tar2bids_done)
 
@@ -186,7 +186,7 @@ def main():
 			scans_data = pd.read_table(os.path.join(args.bids_fold, ises, scans_tsv[0]))
 			scan_type = [x for x in os.listdir(os.path.join(args.bids_fold, ises)) if os.path.isdir(os.path.join(args.bids_fold, ises, x))]
 			for iscan in scan_type:
-				sub_path = make_bids_folders(isub, ilabel, iscan, temp_dir, True, False)
+				sub_path = make_bids_folders(isub, ilabel, iscan, final_dir, True, False)
 				files = [x for x in os.listdir(os.path.join(args.bids_fold, ises, iscan)) if os.path.isfile(os.path.join(args.bids_fold, ises, iscan, x))]
 				
 				for ifile in files:
@@ -214,7 +214,7 @@ def main():
 						
 						scans_tsv_new.append(data_temp)
 			
-			sub_code_path = make_bids_folders(isub.split('-')[1], ilabel, 'info', os.path.join(temp_dir,'.heudiconv'), True, False)
+			sub_code_path = make_bids_folders(isub.split('-')[1], ilabel, 'info', os.path.join(final_dir,'.heudiconv'), True, False)
 			copytree(os.path.join(os.path.dirname(args.bids_fold), '.heudiconv', isub.split('-')[1], ises,'info'), sub_code_path)
 			
 		scans_file = make_bids_filename(isub, 'ses-'+ilabel, None, None, None, 'scans.json', os.path.dirname(sub_path))

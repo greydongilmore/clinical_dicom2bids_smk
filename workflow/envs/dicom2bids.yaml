@@ -1,0 +1,11 @@
+name: dicom2bids
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - "pydicom>=1.0.2"
+  - "setuptools>=39.2.0"
+  - "dcmstack>=0.7.0"
+  - "pandas>=0.24.2"
+  - "heudiconv>=0.8.0"
+  - "dcm2niix>=1.0"
