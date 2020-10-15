@@ -8,6 +8,7 @@ Snakemake workflow to convert a clinical dicom directory into BIDS structure.
 
 * dcm2niix (v1.0.20200427)
 * python requirements (defined in `workflow/envs/mapping.yaml`):
+    * snakemake>=5.23.0
     * pydicom>=1.0.2
     * setuptools>=39.2.0
     * extractCMRRPhysio>=0.1.1
