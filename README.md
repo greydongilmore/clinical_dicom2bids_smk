@@ -11,7 +11,6 @@ Snakemake workflow to convert a clinical dicom directory into BIDS structure.
     * snakemake>=5.23.0
     * pydicom>=1.0.2
     * setuptools>=39.2.0
-    * extractCMRRPhysio>=0.1.1
     * dcmstack>=0.7.0
     * pandas>=0.24.2
     * heudiconv>=0.8.0
