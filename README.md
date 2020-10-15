@@ -40,11 +40,11 @@ data/
 ## Operation dates
 
 One main feature of this clinical pipeline is that the final output is stored in three session directories for each subject:
-* **ses-presurg:** for imaging data aquired prior to the subjects surgery date
-* **ses-perisurg:** for imaging data aquired on the same day of the subjects surgery (generally MRI/CT with sterotactic frame)
-* **ses-postsurg:** for imaging data aquired the immediate day after the subjects surgery onwards
+* **ses-presurg:** for imaging data acquired prior to the subjects surgery date
+* **ses-perisurg:** for imaging data acquired on the same day of the subjects surgery (generally MRI/CT with sterotactic frame)
+* **ses-postsurg:** for imaging data acquired the immediate day after the subjects surgery onwards
 
-To divide the imaging data into the three sessions, the operation date is required foreach subject. This date is attempted to be gleaned automatically assuming some type of intraoperative imaging is performed and the **SeriesDescription** and/or **StudyDescription** DICOM header tag includes an identifer that it was aquired intra-operatively. 
+To divide the imaging data into the three sessions, the operation date is required for each subject. This date is attempted to be gleaned automatically assuming some type of intra-operative imaging is performed and the **SeriesDescription** and/or **StudyDescription** DICOM header tag includes an identifier that it was acquired intra-operatively. 
 
 If the operation date cannot be determined automatically you may provide a path to an `or_dates.tsv` file that has the operation dates for all subjects. 
 
@@ -97,7 +97,7 @@ How one medical center performs aquisition of imaging data around the surgery da
 
 </center>
 
-* <sup>1</sup> the default value is quantified as 30 days before the subsequent surgery any imaging aquisitions will be sorted into the `presurg` session
+* <sup>1</sup> the default value is quantified as 30 days before the subsequent surgery any imaging acquisitions will be sorted into the `presurg` session
 * <sup>2</sup> this may occur if the surgery occurs in the morning and a post-op imaging study is performed to localize implanted electrodes later the same day
 
 ### DICOM sort rules
@@ -253,10 +253,10 @@ To run the the pipeline in Docker, you will first need to install Docker.
 
 ## Run Locally
 
-1. Install Snakemake using [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html):
+1. Install Snakemake using [Python](https://www.python.org/downloads/):
 
     ```sh
-    conda create -c bioconda -c conda-forge -n snakemake snakemake
+    python -m pip install snakemake
     ```
 
     For installation details, see the [instructions in the Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
@@ -267,30 +267,29 @@ To run the the pipeline in Docker, you will first need to install Docker.
     git clone https://github.com/greydongilmore/clinical_dicom2bids_smk.git
     ```
 
+3. Install the Python dependencies by opening a terminal, changing to the project directory and running:
+
+    ```sh
+    python -m pip install -r requirements.txt
+    ```
 
 ### Local run
 
-All the following commands should be run in the root of the directory.
+All the following commands should be run in the root of the project directory.
 
-1. Active the conda environment by running:
-
-   ```sh
-   conda activate snakemake
-   ```
-
-2. Prior to running you can do a dry run:
+1. Prior to running you can do a dry run:
 
    ```sh
-   snakemake --use-conda -n
+   snakemake -n
    ```
 
-3. To locally run the pipeline, run the following:
+2. To locally run the pipeline, run the following:
 
    ```sh
-   snakemake --use-conda -j $N
+   snakemake -j $N
    ```
 
-   where `$N` specifices the number of cores to use.
+   where `$N` specifies the number of cores to use.
 
 
 ## Description of the pipeline
@@ -333,7 +332,7 @@ The repository has the following scheme:
 
 </center>
 
-This workflow is modified from the [dicom2tar](https://github.com/khanlab/dicom2tar) master branch (version date:16/07/2020). The code has been modfied to fit the current pipeline.  
+This workflow is modified from the [dicom2tar](https://github.com/khanlab/dicom2tar) master branch (version date:16/07/2020). The code has been modified to fit the current pipeline.  
 
 The first pass will provide an intermediate output, Tarball files with the associated scan date in the name:
 ```
