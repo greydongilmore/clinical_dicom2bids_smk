@@ -19,14 +19,12 @@ Note:
     Tested on windows 10/ubuntu 16.04, python 2.7.14
 
 '''
-import sys
 import os
 import logging
-import argparse
-
+from dicognito.anonymizer import Anonymizer
 import sort_rules
 import DicomSorter
-
+import pydicom
 import clinical_helpers as ch
 
 logging.basicConfig(level=logging.DEBUG,
@@ -45,7 +43,7 @@ def main():
         output_dir: output sorted or tar files to this folder
     '''
 
-    args = Namespace(dicom_dir=snakemake.input[0], output_dir=snakemake.output[0], clinical_scans=True, get_or_dates = snakemake.params[0])
+    args = Namespace(dicom_dir=snakemake.input.dicom, output_dir=snakemake.output.tar, clinical_scans=True, get_or_dates = snakemake.params[0])
 
     logger = logging.getLogger(__name__)
 
@@ -55,7 +53,30 @@ def main():
     
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
-                
+    
+    if snakemake.config['anonymize']:
+        print('De-identifying imaging data for {}\n'.format(os.path.split(os.path.dirname(args.dicom_dir))[-1]))
+        anonymizer = Anonymizer()
+        for root, folders, files in os.walk(os.path.join(args.dicom_dir)):
+            for file in files:
+                fullpath = os.path.abspath(os.path.join(root,file))
+                old_time={}
+                with pydicom.dcmread(fullpath) as dataset:
+                    old_time={'StudyDate': dataset.StudyDate if 'StudyDate' in dataset else None,
+                              'SeriesDate': dataset.SeriesDate if 'SeriesDate' in dataset else None,
+                              'StudyTime': dataset.StudyTime if 'StudyTime' in dataset else None,
+                              'SeriesTime': dataset.SeriesTime if 'SeriesTime' in dataset else None,
+                              'ContentDate': dataset.ContentDate if 'ContentDate' in dataset else None,
+                              'ContentTime': dataset.ContentTime if 'ContentTime' in dataset else None,
+                              'AcquisitionDate': dataset.AcquisitionDate if 'AcquisitionDate' in dataset else None
+                              }
+                    anonymizer.anonymize(dataset)
+                    for key,val in old_time.items():
+                        if val is not None:
+                            dataset[key].value=val
+                    dataset.save_as(fullpath)
+                    
+            
     ######
     # CFMM sort rule
     ######

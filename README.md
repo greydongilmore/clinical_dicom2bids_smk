@@ -8,12 +8,13 @@ Snakemake workflow to convert a clinical dicom directory into BIDS structure.
 
 * dcm2niix (v1.0.20200427)
 * python requirements (defined in `workflow/envs/mapping.yaml`):
-    * snakemake>=5.23.0
+    * dcmstack>=0.7.0
+    * dicognito>=0.11.0
+    * heudiconv>=0.8.0
+    * pandas>=0.24.2
     * pydicom>=1.0.2
     * setuptools>=39.2.0
-    * dcmstack>=0.7.0
-    * pandas>=0.24.2
-    * heudiconv>=0.8.0
+    * snakemake>=5.23.0
 
 ## Input directory structure
 
@@ -79,6 +80,7 @@ If you are running this pipeline locally, edit the `config/config.yaml` file to 
 | `out_dir`   | full path to where the pipeline should output the data   |
 | `heuristic`  | heudiconv template file to sort/name dicoms according to BIDS standard |
 | `or_dates_file` **[optional]** | path to the `or_dates.tsv` file with subject surgery dates |
+| `anonymize` | whether to anonymize the dicom files prior to storing in tar archives (default = True)|
 
 </center>
 

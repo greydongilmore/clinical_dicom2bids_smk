@@ -4,9 +4,11 @@ out_dir: /media/veracrypt6/projects/iEEG/working_dir/out
 
 heuristic: resources/heuristics/clinical_imaging.py
 
-or_dates_file:
+or_dates_file: /media/veracrypt6/projects/iEEG/working_dir/or_dates.tsv
 
 dcm_config: resources/dcm_config.json
+
+anonymize: True
 
 # Session determination
 session_calc:
