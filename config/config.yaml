@@ -1,10 +1,10 @@
 
-dicom_dir: /media/veracrypt6/projects/iEEG/working_dir/dicoms
-out_dir: /media/veracrypt6/projects/iEEG/working_dir/out
+dicom_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/dicoms
+out_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output
 
 heuristic: resources/heuristics/clinical_imaging.py
 
-or_dates_file: /media/veracrypt6/projects/iEEG/working_dir/or_dates.tsv
+or_dates_file: data/or_dates.tsv
 
 dcm_config: resources/dcm_config.json
 

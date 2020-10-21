@@ -61,7 +61,7 @@ def main():
             for file in files:
                 fullpath = os.path.abspath(os.path.join(root,file))
                 old_time={}
-                with pydicom.dcmread(fullpath) as dataset:
+                with pydicom.dcmread(fullpath, force=True) as dataset:
                     old_time={'StudyDate': dataset.StudyDate if 'StudyDate' in dataset else None,
                               'SeriesDate': dataset.SeriesDate if 'SeriesDate' in dataset else None,
                               'StudyTime': dataset.StudyTime if 'StudyTime' in dataset else None,
