@@ -278,26 +278,26 @@ def sort_rule_clinical(filename, args):
                     if any(substring in modality for substring in {'Intraoperative', 'Skull', 'XA', 'RF','CR','OT'}):
                         if 'CR' not in dataset.Modality:
                             if not args.clinical_events:
-                                clinical_events = os.path.join(os.path.dirname(os.path.dirname(args.output_dir)), 'clinical_events.tsv')
-                                event_date = dataset.StudyDate[0:4] + '_' + dataset.StudyDate[4:6] + '_' + dataset.StudyDate[6:8]
-                                event_date_temp = "\t".join(['P' + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], event_date])
-                                
-                                if os.path.exists(clinical_events):
-                                    with open(clinical_events, 'r') as readFile:
-                                        reader = csv.reader(readFile, delimiter='\t')
-                                        lines = list(reader)
-                                    if event_date_temp.split('\t') not in lines:
-                                        with open(clinical_events, 'a') as writeFile:
-                                            writeFile.write(event_date_temp)
-                                            writeFile.write("\n")
-                                else:
-                                    with open(clinical_events, 'w') as writeFile:
-                                        writeFile.write("\t".join(['subject', 'event_date']))
-                                        writeFile.write("\n")
-                                        writeFile.write(event_date_temp)
-                                        writeFile.write("\n")
+                                #clinical_events = os.path.join(os.path.dirname(os.path.dirname(args.output_dir)), 'clinical_events.tsv')
+                                #event_date = dataset.StudyDate[0:4] + '_' + dataset.StudyDate[4:6] + '_' + dataset.StudyDate[6:8]
+                                #event_date_temp = "\t".join(['P' + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], event_date])
+                                #
+                                #if os.path.exists(clinical_events):
+                                #    with open(clinical_events, 'r') as readFile:
+                                #        reader = csv.reader(readFile, delimiter='\t')
+                                #        lines = list(reader)
+                                #    if event_date_temp.split('\t') not in lines:
+                                #        with open(clinical_events, 'a') as writeFile:
+                                #            writeFile.write(event_date_temp)
+                                #            writeFile.write("\n")
+                                #else:
+                                #    with open(clinical_events, 'w') as writeFile:
+                                #        writeFile.write("\t".join(['subject', 'event_date']))
+                                #        writeFile.write("\n")
+                                #        writeFile.write(event_date_temp)
+                                #        writeFile.write("\n")
                                 return None
-
+                                
                         elif all(['CR' in dataset.Modality, any(x in dataset.StudyDescription for x in {'Skull Routine Portable', 'Intraoperative Portable'})]):
                             errorInfoTemp = "\t".join(['P' + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], study_date,
                                                        clean_path('{series:04d}'.format(series=dataset.SeriesNumber)), dataset.StudyDescription])

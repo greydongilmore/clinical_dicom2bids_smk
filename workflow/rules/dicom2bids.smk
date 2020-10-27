@@ -45,6 +45,7 @@ rule cleanSessions:
 		bids_fold = join(config['out_dir'], 'bids_tmp', 'sub-P' + '{subject}'),
 		num_subs = len(subjects),
 		ses_calc = config['session_calc'],
+		sub_group = config['sub_group']
 	#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 	script:
 		"../scripts/post_tar2bids/clean_sessions.py"

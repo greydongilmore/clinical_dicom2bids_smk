@@ -207,6 +207,7 @@ def main():
 			if ifile == 'participants.tsv':
 				patient_tsv = pd.read_csv(os.path.join(output_dir, 'bids_tmp', 'participants.tsv'), sep='\t')
 				patient_tsv = patient_tsv.sort_values(by=['participant_id']).reset_index(drop=True)
+				patient_tsv['group'] = patient_tsv['group'].replace('control',snakemake.params.sub_group)
 				patient_tsv.to_csv(os.path.join(final_dir, ifile), sep='\t', index=False, na_rep='n/a', line_terminator="")
 			else:
 				shutil.copyfile(os.path.join(output_dir, 'bids_tmp', ifile), os.path.join(final_dir, ifile))
