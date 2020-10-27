@@ -1,5 +1,5 @@
 from os import listdir,makedirs,walk
-from os.path import join,isdir,dirname,split,abspath
+from os.path import join,isdir,dirname,split,abspath,exists
 from glob import glob
 from shutil import copyfile
 
@@ -7,14 +7,13 @@ configfile: "config/config.yaml"
 
 #container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 
-dicom_dir = config['dicom_dir']
-out_dir = config['out_dir']
-heuristic_file = config['heuristic']
+if not exists(join(config['out_dir'],'logs')):
+	makedirs(join(config['out_dir'],'logs'))
 
-subjects = [x.split('-')[1] for x in listdir(dicom_dir) if isdir(join(dicom_dir, x))]
-
+subjects = [x.split('-')[1] for x in listdir(config['dicom_dir']) if isdir(join(config['dicom_dir'], x))]
 
 rule all:
-	input: expand(join(out_dir, 'sub-P' + '{subject}' + "_dicom2bids.done"), subject=subjects)
+	input:
+		expand(join(config['out_dir'], 'logs', 'sub-P' + '{subject}' + "_dicom2bids.done"), subject=subjects)
 
 include: 'rules/dicom2bids.smk'

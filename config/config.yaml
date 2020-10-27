@@ -1,17 +1,19 @@
 
 dicom_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/dicoms
 out_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output
+clinical_event_file: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/clinical_events.tsv
+
+#dicom_dir: /media/veracrypt6/projects/stealthMRI/working_dir/dicoms
+#out_dir: /media/veracrypt6/projects/stealthMRI/working_dir/out
+#clinical_event_file: /media/veracrypt6/projects/stealthMRI/working_dir/clinical_events.tsv
 
 heuristic: resources/heuristics/clinical_imaging.py
-
-or_dates_file: data/or_dates.tsv
-
 dcm_config: resources/dcm_config.json
 
 anonymize: True
 
 # Session determination
 session_calc:
-  periop: 0
-  dur_multi_surg: -30
-  override_periop: True
+  peri: 0
+  dur_multi_event: -30
+  override_peri: True

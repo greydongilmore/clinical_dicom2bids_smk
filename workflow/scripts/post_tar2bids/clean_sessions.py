@@ -82,112 +82,86 @@ def make_bids_folders(subject_id, session_id, kind, output_path, make_dir, overw
 			os.makedirs(path)
 			
 	return path
-# config = {
-# 	'periop': 0,
-# 	'dur_multi_surg': -30,
-# 	'override_periop': True
-# 	}
-# args = Namespace(tar2bids_done = '/home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output/sub-P197_tar2bids.done', 
-# 				 output_dir=os.path.dirname('/home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output/sub-P197_tar2bids.done'), 
-# 				 or_dates_file='',
-# 				 bids_fold='/home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output/bids/sub-P197',
-# 				 num_subs=3, 
-# 				 ses_calc=config)
 
 def main():
+	output_dir=os.path.dirname(os.path.dirname(snakemake.input.touch_tar2bids))
 
-	args = Namespace(tar2bids_done = snakemake.input[0], output_dir=os.path.dirname(snakemake.input[0]), or_dates_file=snakemake.params[0], 
-				  bids_fold=snakemake.params[1],num_subs=snakemake.params[2], ses_calc=snakemake.params[3])
-
-	if not args.or_dates_file:
-		or_dates = pd.read_csv(os.path.join(args.output_dir, 'or_dates.tsv'), sep='\t')
-	else:
-		or_dates = pd.read_csv(args.or_dates_file, sep='\t')
-		
-	final_dir = os.path.join(args.output_dir, 'bids')
+	final_dir = os.path.join(output_dir, 'bids')
 	if not os.path.exists(final_dir):
 		os.mkdir(final_dir)
-
-	# Check to see if this is the last subject complete, copy main BIDS files if so
-	check_status = [x for x in os.listdir(args.output_dir) if x.endswith('_dicom2bids.done')]
-	if len(check_status)==(args.num_subs)-1:
-		bids_files = [x for x in os.listdir(os.path.join(args.output_dir, 'bids_tmp')) if os.path.isfile(os.path.join(args.output_dir, 'bids_tmp', x))]
-		for ifile in bids_files:
-			if ifile == 'participants.tsv':
-				patient_tsv = pd.read_csv(os.path.join(args.output_dir, 'bids_tmp', 'participants.tsv'), sep='\t')
-				patient_tsv = patient_tsv.sort_values(by=['participant_id']).reset_index(drop=True)
-				patient_tsv.to_csv(os.path.join(final_dir, ifile), sep='\t', index=False, na_rep='n/a', line_terminator="")
-			else:
-				shutil.copyfile(os.path.join(args.output_dir, 'bids_tmp', ifile), os.path.join(final_dir, ifile))
 	
-	os.remove(args.tar2bids_done)
+	os.remove(snakemake.input.touch_tar2bids)
 
-	print('Converting subject {} ...'.format(os.path.basename(args.bids_fold)))
-	subject_or = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in or_dates[or_dates['subject']==os.path.basename(args.bids_fold).split('-')[1]]['or_date'].values] if x is not np.nan]
-	orig_sessions = sorted_nicely([x for x in os.listdir(args.bids_fold) if os.path.isdir(os.path.join(args.bids_fold, x)) and 'ses' in x])
+	print('Converting subject {} ...'.format(os.path.basename(snakemake.params.bids_fold)))
+	subject_event = []
+	if snakemake.params.clinical_events:
+		event_dates = pd.read_csv(snakemake.params.clinical_events, sep='\t')
+		subject_event = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in event_dates[event_dates['subject']==os.path.basename(snakemake.params.bids_fold).split('-')[1]]['event_date'].values] if x is not np.nan]
+	
+	orig_sessions = sorted_nicely([x for x in os.listdir(snakemake.params.bids_fold) if os.path.isdir(os.path.join(snakemake.params.bids_fold, x)) and 'ses' in x])
 	
 	sessionDates = {'ses_num':[],'session':[]}
 	for ises in orig_sessions:
-		if not subject_or:
+		if not subject_event:
 			sessionDates['ses_num'].append(ises)
-			sessionDates['session'].append('presurg')
+			sessionDates['session'].append('pre')
 		else:
-			scans_tsv = [x for x in os.listdir(os.path.join(args.bids_fold, ises)) if x.endswith('scans.tsv')]
-			scans_data = pd.read_table(os.path.join(args.bids_fold, ises, scans_tsv[0]))
+			scans_tsv = [x for x in os.listdir(os.path.join(snakemake.params.bids_fold, ises)) if x.endswith('scans.tsv')]
+			scans_data = pd.read_table(os.path.join(snakemake.params.bids_fold, ises, scans_tsv[0]))
 			idate = datetime.datetime.strptime(scans_data['acq_time'].values[0].split('T')[0], '%Y-%m-%d')
 			dateAdded = False
-			for ior in subject_or:
+			for ievent in subject_event:
 				if dateAdded:
-					if 'postsurg' in sessionDates['session'][-1]:
-						if abs((idate-ior).days) <= args.ses_calc['periop']:
-							postop_scan=False
-							if args.ses_calc['override_periop']:
-								for root, folders, files in os.walk(os.path.join(args.bids_fold, ises)):
+					if 'post' in sessionDates['session'][-1]:
+						if abs((idate-ievent).days) <= snakemake.params.ses_calc['peri']:
+							post_scan=False
+							if snakemake.params.ses_calc['override_peri']:
+								for root, folders, files in os.walk(os.path.join(snakemake.params.bids_fold, ises)):
 									for file in files:
 										if 'electrode' in file.lower():
-											postop_scan = True
+											post_scan = True
 
-							if postop_scan:
-								sessionDates['session'][-1]='postsurg'
+							if post_scan:
+								sessionDates['session'][-1]='post'
 							else:
-								sessionDates['session'][-1]='perisurg'
+								sessionDates['session'][-1]='peri'
 
-						elif args.ses_calc['dur_multi_surg'] < (idate-ior).days < 0:
-							sessionDates['session'][-1]='presurg'
+						elif snakemake.params.ses_calc['dur_multi_event'] < (idate-ievent).days < 0:
+							sessionDates['session'][-1]='pre'
 				else:
 					sessionDates['ses_num'].append(ises)
-					if (idate-ior).days > 0:
-						sessionDates['session'].append('postsurg')
-					elif abs((idate-ior).days) <= args.ses_calc['periop']:
-						postop_scan=False
-						if args.ses_calc['override_periop']:
-							for root, folders, files in os.walk(os.path.join(args.bids_fold, ises)):
+					if (idate-ievent).days > 0:
+						sessionDates['session'].append('post')
+					elif abs((idate-ievent).days) <= snakemake.params.ses_calc['peri']:
+						post_scan=False
+						if snakemake.params.ses_calc['override_peri']:
+							for root, folders, files in os.walk(os.path.join(snakemake.params.bids_fold, ises)):
 								for file in files:
 									if 'electrode' in file.lower():
-										postop_scan = True
+										post_scan = True
 
-						if postop_scan:
-							sessionDates['session'].append('postsurg')
+						if post_scan:
+							sessionDates['session'].append('post')
 						else:
-							sessionDates['session'].append('perisurg')
+							sessionDates['session'].append('peri')
 							
-					elif (idate-ior).days < 0:
-						sessionDates['session'].append('presurg')
+					elif (idate-ievent).days < 0:
+						sessionDates['session'].append('pre')
 						
 					dateAdded=True
 		
 	sessionDates = pd.DataFrame.from_dict(sessionDates)
-	isub = os.path.basename(args.bids_fold)
+	isub = os.path.basename(snakemake.params.bids_fold)
 	for ilabel in sessionDates.session.unique():
 		sessions = sessionDates[sessionDates['session']==ilabel]['ses_num'].values
 		scans_tsv_new = []
 		for ises in sessions:
-			scans_tsv = [x for x in os.listdir(os.path.join(args.bids_fold, ises)) if x.endswith('scans.tsv')]
-			scans_data = pd.read_table(os.path.join(args.bids_fold, ises, scans_tsv[0]))
-			scan_type = [x for x in os.listdir(os.path.join(args.bids_fold, ises)) if os.path.isdir(os.path.join(args.bids_fold, ises, x))]
+			scans_tsv = [x for x in os.listdir(os.path.join(snakemake.params.bids_fold, ises)) if x.endswith('scans.tsv')]
+			scans_data = pd.read_table(os.path.join(snakemake.params.bids_fold, ises, scans_tsv[0]))
+			scan_type = [x for x in os.listdir(os.path.join(snakemake.params.bids_fold, ises)) if os.path.isdir(os.path.join(snakemake.params.bids_fold, ises, x))]
 			for iscan in scan_type:
 				sub_path = make_bids_folders(isub, ilabel, iscan, final_dir, True, False)
-				files = [x for x in os.listdir(os.path.join(args.bids_fold, ises, iscan)) if os.path.isfile(os.path.join(args.bids_fold, ises, iscan, x))]
+				files = [x for x in os.listdir(os.path.join(snakemake.params.bids_fold, ises, iscan)) if os.path.isfile(os.path.join(snakemake.params.bids_fold, ises, iscan, x))]
 				
 				for ifile in files:
 					acq_id = ifile.split('acq-')[1].split('_')[0] if 'acq-' in ifile else None
@@ -205,7 +179,7 @@ def main():
 							
 					new_file = make_bids_filename(isub, 'ses-'+ilabel, task_id, acq_id, str(len(number_files)+1).zfill(2), ifile.split('_')[-1], sub_path)
 						
-					shutil.copyfile(os.path.join(args.bids_fold, ises, iscan, ifile), new_file)
+					shutil.copyfile(os.path.join(snakemake.params.bids_fold, ises, iscan, ifile), new_file)
 					
 					if iscan+'/'+ifile in scans_data['filename'].values:
 						name_idx = [i for i,x in enumerate(scans_data['filename'].values) if x == iscan+'/'+ifile][0]
@@ -215,16 +189,30 @@ def main():
 						scans_tsv_new.append(data_temp)
 			
 			sub_code_path = make_bids_folders(isub.split('-')[1], ilabel, 'info', os.path.join(final_dir,'.heudiconv'), True, False)
-			copytree(os.path.join(os.path.dirname(args.bids_fold), '.heudiconv', isub.split('-')[1], ises,'info'), sub_code_path)
+			copytree(os.path.join(os.path.dirname(snakemake.params.bids_fold), '.heudiconv', isub.split('-')[1], ises,'info'), sub_code_path)
 			
 		scans_file = make_bids_filename(isub, 'ses-'+ilabel, None, None, None, 'scans.json', os.path.dirname(sub_path))
-		scans_json = [x for x in os.listdir(os.path.join(args.bids_fold, ises)) if x.endswith('scans.json')]
-		shutil.copyfile(os.path.join(args.bids_fold, ises, scans_json[0]), scans_file)
+		scans_json = [x for x in os.listdir(os.path.join(snakemake.params.bids_fold, ises)) if x.endswith('scans.json')]
+		shutil.copyfile(os.path.join(snakemake.params.bids_fold, ises, scans_json[0]), scans_file)
 		
 		scans_file = make_bids_filename(isub, 'ses-'+ilabel, None, None, None, 'scans.tsv', os.path.dirname(sub_path))
 		scans_tsv_new = pd.DataFrame(scans_tsv_new)
 		scans_tsv_new.to_csv(scans_file, sep='\t', index=False, na_rep='n/a', line_terminator="")
-				
+	
+	# Check to see if this is the last subject complete, copy main BIDS files if so
+	check_status = [x for x in os.listdir(os.path.join(output_dir,'logs')) if x.endswith('_dicom2bids.done')]
+	if len(check_status)==(snakemake.params.num_subs)-1:
+		bids_files = [x for x in os.listdir(os.path.join(output_dir, 'bids_tmp')) if os.path.isfile(os.path.join(output_dir, 'bids_tmp', x))]
+		for ifile in bids_files:
+			if ifile == 'participants.tsv':
+				patient_tsv = pd.read_csv(os.path.join(output_dir, 'bids_tmp', 'participants.tsv'), sep='\t')
+				patient_tsv = patient_tsv.sort_values(by=['participant_id']).reset_index(drop=True)
+				patient_tsv.to_csv(os.path.join(final_dir, ifile), sep='\t', index=False, na_rep='n/a', line_terminator="")
+			else:
+				shutil.copyfile(os.path.join(output_dir, 'bids_tmp', ifile), os.path.join(final_dir, ifile))
+
+		shutil.rmtree(os.path.join(output_dir, 'bids_tmp'))
+		
 if __name__ == "__main__":
 
 	main()

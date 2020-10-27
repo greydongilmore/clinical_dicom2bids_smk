@@ -43,7 +43,7 @@ def main():
         output_dir: output sorted or tar files to this folder
     '''
 
-    args = Namespace(dicom_dir=snakemake.input.dicom, output_dir=snakemake.output.tar, clinical_scans=True, get_or_dates = snakemake.params[0])
+    args = Namespace(dicom_dir=snakemake.input.dicom, output_dir=snakemake.output.tar, clinical_scans=True, clinical_events = snakemake.params.clinical_events)
 
     logger = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ def main():
         os.makedirs(args.output_dir)
     
     if snakemake.config['anonymize']:
-        print('De-identifying imaging data for {}\n'.format(os.path.split(os.path.dirname(args.dicom_dir))[-1]))
+        print('De-identifying imaging data for {}\n'.format(os.path.split(args.dicom_dir)[-1]))
         anonymizer = Anonymizer()
         for root, folders, files in os.walk(os.path.join(args.dicom_dir)):
             for file in files:

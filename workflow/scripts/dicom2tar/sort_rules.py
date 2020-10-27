@@ -223,8 +223,7 @@ def sort_rule_clinical(filename, args):
                         writeFile.write("\n")
         else:
             with open(filen, 'w') as writeFile:
-                writeFile.write(
-                    "\t".join(['subject', 'date', 'series', 'issue']))
+                writeFile.write("\t".join(['subject', 'date', 'series', 'issue']))
                 writeFile.write("\n")
                 writeFile.write(errorInfoTemp)
                 writeFile.write("\n")
@@ -239,17 +238,14 @@ def sort_rule_clinical(filename, args):
         return '{0:08X}'.format(code)
 
     # This will ignore any dicomdir present in the folder
-    if all(['DICOMDIR' not in filename, not filename.endswith('OR_dates.tsv')]):
+    if 'DICOMDIR' not in filename:
         logger = logging.getLogger(__name__)
 
         try:
-            error_file = os.path.join(os.path.dirname(os.path.dirname(args.output_dir)), 'errorInfo.tsv')
-            or_dates_file = os.path.join(os.path.dirname(os.path.dirname(args.output_dir)), 'or_dates.tsv')
+            error_file = os.path.join(os.path.dirname(os.path.dirname(args.output_dir)),'logs', 'errorInfo.tsv')
             
-            dataset = pydicom.read_file(
-                filename, stop_before_pixels=True, force=True)
-            study_date = dataset.StudyDate[0:4] + '_' + \
-                dataset.StudyDate[4:6] + '_' + dataset.StudyDate[6:8]
+            dataset = pydicom.read_file(filename, stop_before_pixels=True, force=True)
+            study_date = dataset.StudyDate[0:4] + '_' + dataset.StudyDate[4:6] + '_' + dataset.StudyDate[6:8]
             
             if 'SeriesDescription' in dataset:
                 if any(x in dataset.SeriesDescription.upper() for x in {'REJECTION'}):
@@ -281,28 +277,24 @@ def sort_rule_clinical(filename, args):
                     # --- INTRAOP X-RAY determination
                     if any(substring in modality for substring in {'Intraoperative', 'Skull', 'XA', 'RF','CR','OT'}):
                         if 'CR' not in dataset.Modality:
-                            if not args.get_or_dates:
-                                or_date = dataset.StudyDate[0:4] + '_' + \
-                                    dataset.StudyDate[4:6] + \
-                                    '_' + dataset.StudyDate[6:8]
-                                orDateTemp = "\t".join(
-                                    ['P' + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], or_date])
+                            if not args.clinical_events:
+                                clinical_events = os.path.join(os.path.dirname(os.path.dirname(args.output_dir)), 'clinical_events.tsv')
+                                event_date = dataset.StudyDate[0:4] + '_' + dataset.StudyDate[4:6] + '_' + dataset.StudyDate[6:8]
+                                event_date_temp = "\t".join(['P' + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], event_date])
                                 
-                                if os.path.exists(or_dates_file):
-                                    with open(or_dates_file, 'r') as readFile:
-                                        reader = csv.reader(
-                                            readFile, delimiter='\t')
+                                if os.path.exists(clinical_events):
+                                    with open(clinical_events, 'r') as readFile:
+                                        reader = csv.reader(readFile, delimiter='\t')
                                         lines = list(reader)
-                                    if orDateTemp.split('\t') not in lines:
-                                        with open(or_dates_file, 'a') as writeFile:
-                                            writeFile.write(orDateTemp)
+                                    if event_date_temp.split('\t') not in lines:
+                                        with open(clinical_events, 'a') as writeFile:
+                                            writeFile.write(event_date_temp)
                                             writeFile.write("\n")
                                 else:
-                                    with open(or_dates_file, 'w') as writeFile:
-                                        writeFile.write(
-                                            "\t".join(['subject', 'or_date']))
+                                    with open(clinical_events, 'w') as writeFile:
+                                        writeFile.write("\t".join(['subject', 'event_date']))
                                         writeFile.write("\n")
-                                        writeFile.write(orDateTemp)
+                                        writeFile.write(event_date_temp)
                                         writeFile.write("\n")
                                 return None
 
