@@ -1,11 +1,12 @@
 
-#dicom_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/dicoms
-#out_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output
-#clinical_event_file: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/clinical_events.tsv
+#
+#--- dicom2bids
+#
 
-dicom_dir: /media/veracrypt6/projects/iEEG/working_dir/dicoms
-out_dir: /media/veracrypt6/projects/iEEG/working_dir/out
-clinical_event_file: 
+dicom_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/dicoms
+out_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output
+clinical_event_file: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/clinical_events.tsv
+participants_tsv:
 
 heuristic: resources/heuristics/clinical_imaging.py
 dcm_config: resources/dcm_config.json
@@ -18,4 +19,6 @@ session_calc:
   dur_multi_event: -30
   override_peri: True
 
+# subject level settings
 sub_group: patient
+subject_prefix: P

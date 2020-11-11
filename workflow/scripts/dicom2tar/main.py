@@ -43,7 +43,7 @@ def main():
         output_dir: output sorted or tar files to this folder
     '''
 
-    args = Namespace(dicom_dir=snakemake.input.dicom, output_dir=snakemake.output.tar, clinical_scans=True, clinical_events = snakemake.params.clinical_events)
+    args = Namespace(dicom_dir=snakemake.input.dicom, output_dir=snakemake.output.tar, clinical_scans=True, clinical_events = snakemake.params.clinical_events, log_dir=snakemake.params.log_dir)
 
     logger = logging.getLogger(__name__)
 

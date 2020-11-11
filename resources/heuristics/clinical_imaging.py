@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 19 22:57:55 2019
-
-@author: Greydon
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Jun 23 16:14:57 2018
-
-@author: Greydon
-"""
 
 def create_key(template, outtype=('nii.gz'), annotation_classes=None):
 	if template is None or not template:

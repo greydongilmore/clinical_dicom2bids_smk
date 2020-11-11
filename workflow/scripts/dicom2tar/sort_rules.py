@@ -242,7 +242,7 @@ def sort_rule_clinical(filename, args):
         logger = logging.getLogger(__name__)
 
         try:
-            error_file = os.path.join(os.path.dirname(os.path.dirname(args.output_dir)),'logs', 'errorInfo.tsv')
+            error_file = os.path.join(args.log_dir, 'errorInfo.tsv')
             
             dataset = pydicom.read_file(filename, stop_before_pixels=True, force=True)
             study_date = dataset.StudyDate[0:4] + '_' + dataset.StudyDate[4:6] + '_' + dataset.StudyDate[6:8]
