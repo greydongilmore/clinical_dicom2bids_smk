@@ -1,0 +1,5 @@
+- nii instead of gz - fixed with dicom_config
+- anonymize dates - modify main for dicom2tar to offset dates
+- add defacing fddfd
+- auto adjust if two surgical dates exist
+

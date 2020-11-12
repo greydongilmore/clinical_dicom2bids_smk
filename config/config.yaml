@@ -8,8 +8,8 @@ out_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output
 clinical_event_file: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/clinical_events.tsv
 participants_tsv:
 
-heuristic: resources/heuristics/clinical_imaging.py
-dcm_config: resources/dcm_config.json
+heuristic: resources/heuristics/clinical_emory.py
+dcm_config: resources/dcm_config_emory.json
 
 anonymize: True
 
@@ -21,4 +21,4 @@ session_calc:
 
 # subject level settings
 sub_group: patient
-subject_prefix: P
+subject_prefix: amyg
