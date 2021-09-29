@@ -3,17 +3,18 @@
 #--- dicom2bids
 #
 
-dicom_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/dicoms
-out_dir: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/output
-clinical_event_file: /home/greydon/Documents/GitHub/clinical_dicom2bids_smk/data/clinical_events.tsv
+dicom_dir: /home/greydon/Downloads/PPMI/dicoms
+out_dir: /home/greydon/Downloads/PPMI/out
+clinical_event_file: 
 participants_tsv:
 
-heuristic: resources/heuristics/clinical_emory.py
-dcm_config: resources/dcm_config_emory.json
+heuristic: resources/heuristics/ppmi_heuristic.py
+dcm_config: resources/dcm_config.json
 
-anonymize: True
+anonymize: False
 
 # Session determination
+sort_sessions: False
 session_calc:
   peri: 0
   dur_multi_event: -30
@@ -21,4 +22,4 @@ session_calc:
 
 # subject level settings
 sub_group: patient
-subject_prefix: amyg
+subject_prefix: P

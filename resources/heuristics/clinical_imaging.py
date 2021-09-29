@@ -59,6 +59,11 @@ def infotodict(seqinfo):
 	ct = create_key('{bids_subject_session_dir}/ct/{bids_subject_session_prefix}_run-{item:02d}_ct')
 	ct_acq = create_key('{bids_subject_session_dir}/ct/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_ct')
 	
+	#pet
+	pet = create_key('{bids_subject_session_dir}/pet/{bids_subject_session_prefix}_task-rest_run-{item:02d}_pet')
+	pet_acq = create_key('{bids_subject_session_dir}/pet/{bids_subject_session_prefix}_task-rest_acq-{acq}_run-{item:02d}_pet')
+	pet_task = create_key('{bids_subject_session_dir}/pet/{bids_subject_session_prefix}_task-{task}_acq-{acq}_run-{item:02d}_pet')
+
 	info = {t1w:[],
 			t1w_acq:[],
 			t2w:[],
@@ -71,7 +76,10 @@ def infotodict(seqinfo):
 			fa:[],
 			fa_acq:[],
 			ct:[],
-			ct_acq:[]}
+			ct_acq:[],
+			pet:[],
+			pet_acq:[],
+			pet_task:[]}
 	
 	for idx, s in enumerate(seqinfo):
 		if any(substring in s.study_description.upper() for substring in {'MR'}):
@@ -115,7 +123,15 @@ def infotodict(seqinfo):
 					info[t1w_acq].append({'item': s.series_id, 'acq': 'MPGR2D'})
 				else:
 					info[t1w_acq].append({'item': s.series_id, 'acq': 'MPGR3D'})
-					
+			
+			#elif 'RAGE' in s.series_description.upper():
+			#	if postop:
+			#		info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeMPRAGE'})
+			#	elif 'AX' in s.series_description.upper():
+			#		info[t1w_acq].append({'item': s.series_id, 'acq': 'MPRAGE2D'})
+			#	else:
+			#		info[t1w_acq].append({'item': s.series_id, 'acq': 'MPRAGE'})
+
 			elif any(substring in s.series_description.upper() for substring in {'IR_FSPGR', 'FSPGR','IR-FSPGR'}):
 				if postop:
 					info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeFSPGR'})
@@ -158,7 +174,28 @@ def infotodict(seqinfo):
 					info[fa_acq].append({'item': s.series_id, 'acq': 'Electrode'})
 				else:
 					info[fa].append({'item': s.series_id})
-					
+		
+		elif any(substring in s.study_description.upper() for substring in {'PET'}):
+			if any(substring in s.series_description.upper() for substring in {'RECON'}) and (s.dim3 == 47) and (s.TR == -1):
+				if 'FBP' in s.series_description.upper():
+					info[pet_acq].append({'item': s.series_id, 'acq': 'FBP'})
+				else:
+					info[pet].append({'item': s.series_id})
+
+			elif '3d' in s.protocol_name.lower() and (s.dim3 > 1) and (s.TR == -1):
+				if 'axial' in s.series_description.lower():
+					info[pet_acq].append({'item': s.series_id, 'acq': 'AX'})
+				elif 'coronal' in s.series_description.lower():
+					info[pet_acq].append({'item': s.series_id, 'acq': 'COR'})
+				elif 'sagittal' in s.series_description.lower():
+					info[pet_acq].append({'item': s.series_id, 'acq': 'SAG'})
+
+			elif 'volumetrix' in s.protocol_name.lower() and (s.dim3 == 1) and (s.TR == -1):
+				if 'axial' in s.series_description.lower():
+					info[pet_task].append({'item': s.series_id, 'task': 'volumetrix', 'acq': 'AX'})
+				elif 'coronal' in s.series_description.lower():
+					info[pet_task].append({'item': s.series_id, 'task': 'volumetrix', 'acq': 'COR'})
+
 		#   CT SCANS
 		ct_scan = False
 		if s.study_description =='':
@@ -167,7 +204,7 @@ def infotodict(seqinfo):
 		elif any(substring in s.study_description.upper() for substring in {'CT'}):
 			ct_scan = True
 		if ct_scan:
-			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST', 'POST OP'}
+			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST', 'POST OP', 'HEAD (USE FOR ALL PTS)'}
 			frame_list = {'STEROTACTIC', 'STEREOTACTIC', 'STEALTH', 'CTA_COW'}
 			
 			if ('SCOUT' not in s.series_description.upper()):

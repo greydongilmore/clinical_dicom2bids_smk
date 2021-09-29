@@ -1,4 +1,5 @@
-from os import listdir,makedirs,walk,path
+from os import listdir,makedirs,walk
+from os.path import join,basename,exists,abspath,isdir
 from glob import glob
 from shutil import copyfile
 import pandas as pd
@@ -16,10 +17,11 @@ if config['participants_tsv']:
     df = pd.read_table(config['participants_tsv'])
     subjects = [s.strip('sub-') for s in df.participant_id.to_list() ]
 else:
-    subjects = [x.split('-')[1] for x in listdir(config['dicom_dir']) if path.isdir(path.join(config['dicom_dir'], x))]
+    subjects = [x.split('-')[1] for x in listdir(config['dicom_dir']) if isdir(join(config['dicom_dir'], x))]
 
 rule all:
 	input:
-		expand(path.join(config['out_dir'], 'logs', 'sub-' + subject_id + "_dicom2bids.done"), subject=subjects)
+		tar2bids=expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"), subject=subjects),
+		dicom2bids=expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_dicom2bids.done"), subject=subjects),
 
 include: 'rules/dicom2bids.smk'
