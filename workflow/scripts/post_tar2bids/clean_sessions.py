@@ -193,7 +193,8 @@ def main():
 			
 		scans_file = make_bids_filename(isub, 'ses-'+ilabel, None, None, None, 'scans.json', os.path.dirname(sub_path))
 		scans_json = [x for x in os.listdir(os.path.join(snakemake.params.bids_fold, ises)) if x.endswith('scans.json')]
-		shutil.copyfile(os.path.join(snakemake.params.bids_fold, ises, scans_json[0]), scans_file)
+		if scans_json:
+			shutil.copyfile(os.path.join(snakemake.params.bids_fold, ises, scans_json[0]), scans_file)
 		
 		scans_file = make_bids_filename(isub, 'ses-'+ilabel, None, None, None, 'scans.tsv', os.path.dirname(sub_path))
 		scans_tsv_new = pd.DataFrame(scans_tsv_new)
