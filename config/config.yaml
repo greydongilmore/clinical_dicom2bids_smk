@@ -3,9 +3,11 @@
 #--- dicom2bids
 #
 
-dicom_dir: /media/veracrypt6/projects/stealthMRI/working_dir/dicoms
-out_dir: /media/veracrypt6/projects/stealthMRI/working_dir/out
-clinical_event_file: /media/veracrypt6/projects/stealthMRI/working_dir/clinical_events.tsv
+#dicom_dir: /media/veracrypt6/projects/stealthMRI/working_dir/dicoms
+#out_dir: /media/veracrypt6/projects/stealthMRI/working_dir/out
+dicom_dir: /home/greydon/Downloads/for_jon/dicoms
+out_dir: /home/greydon/Downloads/for_jon/out
+clinical_event_file: 
 participants_tsv:
 
 heuristic: resources/heuristics/clinical_imaging.py
@@ -14,7 +16,7 @@ dcm_config: resources/dcm_config.json
 anonymize: False
 
 # Session determination
-sort_sessions: True
+sort_sessions: False
 session_calc:
   peri: 0
   dur_multi_event: -30
