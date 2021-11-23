@@ -101,6 +101,11 @@ def infotodict(seqinfo):
 						info[t1w_acq].append({'item': s.series_id, 'acq': 'MPGR2D'})
 					else:
 						info[t1w_acq].append({'item': s.series_id, 'acq': 'MPGR3D'})
+				elif all(x in s.series_description.upper() for x in ('3D','BRAVO')):
+					if postop:
+						info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeBRAVO'})
+					else:
+						info[t1w_acq].append({'item': s.series_id, 'acq': 'BRAVO'})
 				else:
 					if postop:
 						if 'T2' in s.series_description.upper():
@@ -124,13 +129,13 @@ def infotodict(seqinfo):
 				else:
 					info[t1w_acq].append({'item': s.series_id, 'acq': 'MPGR3D'})
 			
-			elif 'RAGE' in s.series_description.upper():
-				if postop:
-					info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeMPRAGE'})
-				elif 'AX' in s.series_description.upper():
-					info[t1w_acq].append({'item': s.series_id, 'acq': 'MPRAGE2D'})
-				else:
-					info[t1w_acq].append({'item': s.series_id, 'acq': 'MPRAGE'})
+			#elif 'RAGE' in s.series_description.upper():
+			#	if postop:
+			#		info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeMPRAGE'})
+			#	elif 'AX' in s.series_description.upper():
+			#		info[t1w_acq].append({'item': s.series_id, 'acq': 'MPRAGE2D'})
+			#	else:
+			#		info[t1w_acq].append({'item': s.series_id, 'acq': 'MPRAGE'})
 
 			elif any(substring in s.series_description.upper() for substring in {'IR_FSPGR', 'FSPGR','IR-FSPGR'}):
 				if postop:
@@ -204,7 +209,7 @@ def infotodict(seqinfo):
 		elif any(substring in s.study_description.upper() for substring in {'CT'}):
 			ct_scan = True
 		if ct_scan:
-			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST', 'POST OP'}
+			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST', 'POST OP', 'HEAD (USE FOR ALL PTS)'}
 			frame_list = {'STEROTACTIC', 'STEREOTACTIC', 'STEALTH', 'CTA_COW'}
 			
 			if ('SCOUT' not in s.series_description.upper()):

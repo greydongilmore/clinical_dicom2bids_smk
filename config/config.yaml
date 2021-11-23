@@ -3,11 +3,18 @@
 #--- dicom2bids
 #
 
-#dicom_dir: /media/veracrypt6/projects/stealthMRI/working_dir/dicoms
-#out_dir: /media/veracrypt6/projects/stealthMRI/working_dir/out
-dicom_dir: /home/greydon/Downloads/for_jon/dicoms
-out_dir: /home/greydon/Downloads/for_jon/out
-clinical_event_file: 
+#dicom_dir: /media/veracrypt6/projects/degad/sourcedata/dicoms
+#out_dir: /media/veracrypt6/projects/degad
+#clinical_event_file: /media/veracrypt6/projects/degad/events.tsv
+
+#dicom_dir: /home/greydon/Documents/data/SEEG/sourcedata/dicoms
+#out_dir: /home/greydon/Documents/data/SEEG
+#clinical_event_file: /home/greydon/Documents/data/SEEG/events.tsv
+
+dicom_dir: /home/greydon/Documents/data/DBS/sourcedata/dicoms
+out_dir: /home/greydon/Documents/data/DBS
+clinical_event_file: /home/greydon/Documents/data/DBS/events.tsv
+
 participants_tsv:
 
 heuristic: resources/heuristics/clinical_imaging.py
@@ -16,7 +23,7 @@ dcm_config: resources/dcm_config.json
 anonymize: False
 
 # Session determination
-sort_sessions: False
+sort_sessions: True
 session_calc:
   peri: 0
   dur_multi_event: -30
