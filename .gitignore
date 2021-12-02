@@ -1,3 +1,4 @@
+*.pyc
 .snakemake/log/*
 .snakemake/metadata/*
 ***/tmp/*

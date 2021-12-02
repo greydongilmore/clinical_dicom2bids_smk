@@ -8,14 +8,20 @@ configfile: "config/config.yaml"
 
 #container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 
-#if not exists(join(config['out_dir'],'logs')):
-#	makedirs(join(config['out_dir'],'logs'))
-
 subject_id = config['subject_prefix'].upper() + '{subject}'
+
+config['dicom_dir'] = join(config['bids_dir'], 'sourcedata', 'dicoms')
+config['out_dir'] = config['bids_dir']
+config['clinical_event_file'] = join(config['bids_dir'], 'events.tsv')
+config['participants_tsv'] = join(config['bids_dir'], 'participants_run.tsv')
 
 if config['participants_tsv']:
     df = pd.read_table(config['participants_tsv'])
-    subjects = [s.strip('sub-') for s in df.participant_id.to_list() ]
+    subjects=df.participant_id.to_list()
+    if isinstance(subjects[0],str):
+        subjects = [ s.strip('sub-P') for s in subjects]
+    else:
+        subjects = [ str(s).zfill(3) for s in subjects]
 else:
     subjects = [x.split('-')[1] for x in listdir(config['dicom_dir']) if isdir(join(config['dicom_dir'], x))]
 

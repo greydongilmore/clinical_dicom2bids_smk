@@ -11,11 +11,7 @@
 #out_dir: /home/greydon/Documents/data/SEEG
 #clinical_event_file: /home/greydon/Documents/data/SEEG/events.tsv
 
-dicom_dir: /home/greydon/Documents/data/DBS/sourcedata/dicoms
-out_dir: /home/greydon/Documents/data/DBS
-clinical_event_file: /home/greydon/Documents/data/DBS/events.tsv
-
-participants_tsv:
+bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/DBS
 
 heuristic: resources/heuristics/clinical_imaging.py
 dcm_config: resources/dcm_config.json
