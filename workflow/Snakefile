@@ -25,9 +25,13 @@ if config['participants_tsv']:
 else:
     subjects = [x.split('-')[1] for x in listdir(config['dicom_dir']) if isdir(join(config['dicom_dir'], x))]
 
+include: 'rules/common.smk'
+
 rule all:
 	input:
 		tar2bids=expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"), subject=subjects),
 		dicom2bids=expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_dicom2bids.done"), subject=subjects),
+        fastsurfer=expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_fastsurfer.done"), subject=subjects),
 
 include: 'rules/dicom2bids.smk'
+include: 'rules/fmriprep.smk'

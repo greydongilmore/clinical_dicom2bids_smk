@@ -3,15 +3,9 @@
 #--- dicom2bids
 #
 
-#dicom_dir: /media/veracrypt6/projects/degad/sourcedata/dicoms
-#out_dir: /media/veracrypt6/projects/degad
-#clinical_event_file: /media/veracrypt6/projects/degad/events.tsv
+bids_dir: /home/greydon/Documents/data/DBS
 
-#dicom_dir: /home/greydon/Documents/data/SEEG/sourcedata/dicoms
-#out_dir: /home/greydon/Documents/data/SEEG
-#clinical_event_file: /home/greydon/Documents/data/SEEG/events.tsv
-
-bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/DBS
+#bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/DBS
 
 heuristic: resources/heuristics/clinical_imaging.py
 dcm_config: resources/dcm_config.json
@@ -28,3 +22,12 @@ session_calc:
 # subject level settings
 sub_group: patient
 subject_prefix: P
+
+fastsurfer:
+    home: "/home/greydon/Documents/GitHub/FastSurfer"
+    py: "python3"
+    sid: 'fastsurfer'
+    batch: 16
+    order: 0    #(0=nearest,1=linear(default),2=quadratic,3=cubic)
+    seg_only: True
+    vol_segstats: True
