@@ -1,5 +1,5 @@
 from os import listdir,makedirs,walk
-from os.path import join,basename,exists,abspath,isdir
+from os.path import join,basename,exists,abspath,isdir,dirname
 from glob import glob
 from shutil import copyfile
 import pandas as pd
@@ -25,13 +25,22 @@ if config['participants_tsv']:
 else:
     subjects = [x.split('-')[1] for x in listdir(config['dicom_dir']) if isdir(join(config['dicom_dir'], x))]
 
+final_outputs = []
+
 include: 'rules/common.smk'
+
+if config['fastsurfer']['run']:
+    include: 'rules/fastsurfer.smk'
+
+if config['fmriprep']['run']:
+    include: 'rules/fmriprep.smk'
+    if not exists(join(config['out_dir'], 'derivatives', 'fmriprep')):
+       makedirs(join(config['out_dir'], 'derivatives', 'fmriprep'))
+
+include: 'rules/dicom2bids.smk'
 
 rule all:
 	input:
-		tar2bids=expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"), subject=subjects),
-		dicom2bids=expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_dicom2bids.done"), subject=subjects),
-        fastsurfer=expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_fastsurfer.done"), subject=subjects),
+		final_outputs
 
-include: 'rules/dicom2bids.smk'
-include: 'rules/fmriprep.smk'
+

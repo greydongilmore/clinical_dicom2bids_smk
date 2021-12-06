@@ -2,4 +2,4 @@
 .snakemake/*
 .snakemake/metadata/*
 ***/tmp/*
-workflow/*
+work/*

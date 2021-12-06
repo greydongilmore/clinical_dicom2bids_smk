@@ -33,6 +33,7 @@ rule tar2bids:
 		bids = directory(join(config['out_dir'], 'bids_tmp')),
 		dcm_config=config['dcm_config']
 	output: 
+		bids_fold = directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id)),
 		touch_tar2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done")),
 	#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 	shell:
@@ -42,11 +43,12 @@ if config['sort_sessions']:
 	rule cleanSessions:
 		input:
 			touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
+			bids_fold = join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id),
 		output:
-			touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_dicom2bids.done")),
+			touch_cleanSessions=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
+			t1w_vol=bids(root=join(config['out_dir'], 'bids'), subject=subject_id, datatype='anat', session='pre', run='01', suffix='T1w.nii.gz'),
 		params:
 			clinical_events=config['clinical_event_file'],
-			bids_fold = join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id),
 			num_subs = len(subjects),
 			ses_calc = config['session_calc'],
 			sub_group = config['sub_group']
@@ -58,4 +60,8 @@ else:
 		input:
 			touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done")
 		output:
-			touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_dicom2bids.done"))
+			touch_cleanSessions=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
+			t1w_vol=bids(root=join(config['out_dir'], 'bids'), subject=subject_id, datatype='anat', session='pre', run='01', suffix='T1w.nii.gz'),
+
+final_outputs.extend(expand(rules.tar2bids.output.touch_tar2bids, subject=subjects))
+final_outputs.extend(expand(rules.cleanSessions.output.touch_cleanSessions, subject=subjects))

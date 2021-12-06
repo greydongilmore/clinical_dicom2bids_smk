@@ -24,10 +24,21 @@ sub_group: patient
 subject_prefix: P
 
 fastsurfer:
-    home: "/home/greydon/Documents/GitHub/FastSurfer"
-    py: "python3"
-    sid: 'fastsurfer'
-    batch: 16
-    order: 0    #(0=nearest,1=linear(default),2=quadratic,3=cubic)
-    seg_only: True
-    vol_segstats: True
+  run: False
+  home: "/home/greydon/Documents/GitHub/FastSurfer"
+  py: "python3"
+  sid: 'fastsurfer'
+  batch: 16
+  order: 0    #(0=nearest,1=linear(default),2=quadratic,3=cubic)
+  seg_only: True
+  vol_segstats: True
+
+fmriprep:
+  run: True
+  fmriprep_license: resources/license.txt
+
+singularity:
+  neuroglia-core: "docker://khanlab/neuroglia-core:latest"
+  fastsurfer: "docker://deepmi/fastsurfer:latest"
+  freesurfer: "docker://freesurfer/freesurfer:latest"
+  fmriprep: .snakemake/singularity/02f848ff41039b07932048d9371c7c4a.simg
