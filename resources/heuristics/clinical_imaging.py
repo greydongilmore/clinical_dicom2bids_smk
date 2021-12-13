@@ -58,6 +58,7 @@ def infotodict(seqinfo):
 	#CT
 	ct = create_key('{bids_subject_session_dir}/ct/{bids_subject_session_prefix}_run-{item:02d}_ct')
 	ct_acq = create_key('{bids_subject_session_dir}/ct/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_ct')
+	ct_acq_desc = create_key('{bids_subject_session_dir}/ct/{bids_subject_session_prefix}_acq-{acq}_desc-{desc}_run-{item:02d}_ct')
 	
 	#pet
 	pet = create_key('{bids_subject_session_dir}/pet/{bids_subject_session_prefix}_task-rest_run-{item:02d}_pet')
@@ -77,6 +78,7 @@ def infotodict(seqinfo):
 			fa_acq:[],
 			ct:[],
 			ct_acq:[],
+			ct_acq_desc:[],
 			pet:[],
 			pet_acq:[],
 			pet_task:[]}
@@ -203,15 +205,24 @@ def infotodict(seqinfo):
 				ct_scan = True
 		elif any(substring in s.study_description.upper() for substring in {'CT'}):
 			ct_scan = True
+		
 		if ct_scan:
 			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST', 'POST OP'}
 			frame_list = {'STEROTACTIC', 'STEREOTACTIC', 'STEALTH', 'CTA_COW'}
 			
 			if ('SCOUT' not in s.series_description.upper()):
 				if any(substring in s.protocol_name.upper() for substring in electrode_list):
-					info[ct_acq].append({'item': s.series_id, 'acq': 'Electrode'})
+					
+					if ('BONE' in s.series_description.upper()):
+						info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Electrode', 'desc':'BONE'})
+					else:
+						info[ct_acq].append({'item': s.series_id, 'acq': 'Electrode'})
+
 				elif any(substring in s.protocol_name.upper() for substring in frame_list):
-					info[ct_acq].append({'item': s.series_id, 'acq': 'Frame'})
+					if ('BONE' in s.series_description.upper()):
+						info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Frame', 'desc':'BONE'})
+					else:
+						info[ct_acq].append({'item': s.series_id, 'acq': 'Frame'})
 				else:
 					info[ct].append({'item': s.series_id})
 				

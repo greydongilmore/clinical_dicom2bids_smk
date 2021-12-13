@@ -34,7 +34,7 @@ fastsurfer:
   vol_segstats: True
 
 fmriprep:
-  run: True
+  run: False
   fmriprep_license: resources/license.txt
 
 singularity:

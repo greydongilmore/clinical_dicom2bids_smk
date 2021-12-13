@@ -261,7 +261,7 @@ def sort_rule_clinical(filename, args):
             # This will skip any order sheets and localizers
             elif 'ImageType' not in dataset:
                 return None
-            elif any(x in  dataset.ImageType for x in {'LOCALIZER','SECONDARY'}):
+            elif any(x in  dataset.ImageType for x in {'LOCALIZER'}):
                 return None
             else:
                 # if 'Manufacturer' in dataset:

@@ -43,8 +43,7 @@ def main():
         output_dir: output sorted or tar files to this folder
     '''
 
-    args = Namespace(dicom_dir=snakemake.input.dicom, output_dir=snakemake.output.tar, clinical_scans=True,
-        clinical_events = snakemake.params.clinical_events, log_dir=snakemake.params.log_dir, config=snakemake.config)
+    args = Namespace(dicom_dir=snakemake.input.dicom, output_dir=snakemake.output.tar, clinical_scans=True, clinical_events = snakemake.params.clinical_events, log_dir=snakemake.params.log_dir)
 
     logger = logging.getLogger(__name__)
 
@@ -54,9 +53,7 @@ def main():
     
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
-    if not os.path.exists(args.log_dir):
-        os.makedirs(args.log_dir)
-
+    
     if snakemake.config['anonymize']:
         print('De-identifying imaging data for {}\n'.format(os.path.split(args.dicom_dir)[-1]))
         anonymizer = Anonymizer()
