@@ -3,9 +3,9 @@
 #--- dicom2bids
 #
 
-bids_dir: /home/greydon/Documents/data/DBS
+#bids_dir: /home/greydon/Documents/data/SEEG
 
-#bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/DBS
+bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/clinical
 
 heuristic: resources/heuristics/clinical_imaging.py
 dcm_config: resources/dcm_config.json

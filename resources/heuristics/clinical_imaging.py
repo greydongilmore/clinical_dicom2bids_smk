@@ -90,7 +90,7 @@ def infotodict(seqinfo):
 				if not any(x in s.protocol_name.upper() for x in {'POST STROKE'}):
 					postop = True
 				
-			if any(substring in s.series_description.upper() for substring in {'STEALTH','3D','STEREO'}) and not any(substring in s.series_description.upper() for substring in {'IR_FSPGR', 'FSPGR'}):
+			if any(substring in s.series_description.upper() for substring in {'STEALTH','3D','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY'}) and not any(substring in s.series_description.upper() for substring in {'IR_FSPGR', 'FSPGR'}):
 				if any(substring in s.series_description.upper() for substring in {'IR_FSPGR', 'FSPGR', 'IR-FSPGR'}):
 					if postop:
 						info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeFSPGR'})
