@@ -5,7 +5,10 @@
 
 #bids_dir: /home/greydon/Documents/data/SEEG
 
-bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/clinical
+
+#bids_dir: /media/veracrypt6/projects/stealthMRI/imaging/clinical
+
+#bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/DBS
 
 heuristic: resources/heuristics/clinical_imaging.py
 dcm_config: resources/dcm_config.json
@@ -24,11 +27,12 @@ sub_group: patient
 subject_prefix: P
 
 fastsurfer:
-  run: False
+  run: True
   home: "/home/greydon/Documents/GitHub/FastSurfer"
   py: "python3"
   sid: 'fastsurfer'
-  batch: 16
+  batch: 8
+  threads: 2
   order: 0    #(0=nearest,1=linear(default),2=quadratic,3=cubic)
   seg_only: True
   vol_segstats: True
@@ -36,9 +40,10 @@ fastsurfer:
 fmriprep:
   run: False
   fmriprep_license: resources/license.txt
+  bids_filter: resources/bids_filter.json
 
 singularity:
   neuroglia-core: "docker://khanlab/neuroglia-core:latest"
   fastsurfer: "docker://deepmi/fastsurfer:latest"
   freesurfer: "docker://freesurfer/freesurfer:latest"
-  fmriprep: .snakemake/singularity/02f848ff41039b07932048d9371c7c4a.simg
+  fmriprep: resources/fmriprep-21.0.0.simg

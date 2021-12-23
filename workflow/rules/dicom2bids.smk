@@ -39,20 +39,39 @@ rule tar2bids:
 	shell:
 		'heudiconv --files {input.tar} -o {params.bids} -f {params.heuristic_file} -c dcm2niix --dcmconfig {params.dcm_config} -b'
 
-rule cleanSessions:
-	input:
-		touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
-	output:
-		touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
-	params:
-		clinical_events=config['clinical_event_file'],
-		bids_fold = join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id),
-		num_subs = len(subjects),
-		ses_calc = config['session_calc'],
-		sub_group = config['sub_group']
-	#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
-	script:
-		"../scripts/post_tar2bids/clean_sessions.py"
+if config['fastsurfer']['run'] or config['fmriprep']['run']:
+	rule cleanSessions:
+		input:
+			touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
+		output:
+			touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
+			t1w_file= bids(root=join(config['out_dir'], 'bids'), subject=subject_id, datatype='anat', session='pre', run='01', suffix='T1w.nii.gz'),
+		params:
+			clinical_events=config['clinical_event_file'],
+			bids_fold = join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id),
+			num_subs = len(subjects),
+			ses_calc = config['session_calc'],
+			sub_group = config['sub_group']
+		#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
+		script:
+			"../scripts/post_tar2bids/clean_sessions.py"
+else:
+	rule cleanSessions:
+		input:
+			touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
+		output:
+			touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
+		params:
+			clinical_events=config['clinical_event_file'],
+			bids_fold = join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id),
+			num_subs = len(subjects),
+			ses_calc = config['session_calc'],
+			sub_group = config['sub_group']
+		#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
+		script:
+			"../scripts/post_tar2bids/clean_sessions.py"
 
 final_outputs.extend(expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"), subject=subjects))
 final_outputs.extend(expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done"), subject=subjects))
+if config['fastsurfer']['run'] or config['fmriprep']['run']:
+	final_outputs.extend(expand(bids(root=join(config['out_dir'], 'bids'), subject=subject_id, datatype='anat', session='pre', run='01', suffix='T1w.nii.gz'), subject=subjects))

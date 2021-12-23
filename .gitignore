@@ -3,3 +3,4 @@
 .snakemake/metadata/*
 ***/tmp/*
 work/*
+*.simg

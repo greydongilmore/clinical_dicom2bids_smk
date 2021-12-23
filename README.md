@@ -160,11 +160,11 @@ The repository has the following scheme:
 ├── README.md
 ├── workflow
 │   ├── rules
-|   │   └── dicom2bids.smk
+│   │   └── dicom2bids.smk
 │   ├── envs
-|   │   └── mapping.yaml
+│   │   └── mapping.yaml
 │   ├── scripts
-|   |   ├── dicom2tar               # sorts and stores the dicoms into Tarballs
+│   |   ├── dicom2tar               # sorts and stores the dicoms into Tarballs
 |   │   |   ├── clinical_helpers.py
 |   |   |   ├── DicomSorter.py
 |   |   |   ├── main.py

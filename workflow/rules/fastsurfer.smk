@@ -14,15 +14,17 @@ if config['fastsurfer']['seg_only']:
             fastsurfer_run = config['fastsurfer']['home'],
             sid = config['fastsurfer']['sid'],
             batch = config['fastsurfer']['batch'],
+            threads = config['fastsurfer']['threads'],
             order = config['fastsurfer']['order'],
             py = config['fastsurfer']['py'],
         output:
             fastsurfer_out = directory(join(config['out_dir'], 'derivatives', config['fastsurfer']['sid'], 'sub-' + subject_id)),
             touch_fastsurfer=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_fastsurfer.done")),
-        threads:6
+        threads:config['fastsurfer']['threads']
         shell:
-            "export FASTSURFER_HOME={params.fastsurfer_run} &&{params.fastsurfer_run}/run_fastsurfer.sh --t1 {input.t1} --sd {output.fastsurfer_out} --sid {params.sid} --order {params.order} \
-            --py {params.py}"
+            "export FASTSURFER_HOME={params.fastsurfer_run} &&export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:50&&{params.fastsurfer_run}/run_fastsurfer.sh \
+--t1 {input.t1} --sd {output.fastsurfer_out} --sid {params.sid} --order {params.order} \
+--py {params.py} --threads {params.threads} --parallel"
 else:
     rule fastsurfer_seg:
         input: 
@@ -30,16 +32,17 @@ else:
         params:
             fastsurfer_run =config['fastsurfer']['home'],
             sid = config['fastsurfer']['sid'],
-            threads = config['fastsurfer']['threads'],
             batch = config['fastsurfer']['batch'],
+            threads = config['fastsurfer']['threads'],
             order = config['fastsurfer']['order'],
             py = config['fastsurfer']['py'],
         output:
             fastsurfer_out = directory(join(config['out_dir'], 'derivatives', config['fastsurfer']['sid'], 'sub-' + subject_id)),
             touch_fastsurfer=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_fastsurfer.done")),
-        threads:6
+        threads:config['fastsurfer']['threads']
         shell:
-            "export FASTSURFER_HOME={params.fastsurfer_run} &&{params.fastsurfer_run}/run_fastsurfer.sh --t1 {input.t1} --sd {output.fastsurfer_out} --sid {params.sid} --order {params.order} \
-            --py {params.py} --parallel"
+            "export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:4096 &&export FASTSURFER_HOME={params.fastsurfer_run} &&{params.fastsurfer_run}/run_fastsurfer.sh \
+--t1 {input.t1} --sd {output.fastsurfer_out} --sid {params.sid} --order {params.order} \
+--py {params.py} --threads {params.threads} --batch {params.batch}"
 
 final_outputs.extend(expand(rules.fastsurfer_seg.output.touch_fastsurfer, subject=subjects))
