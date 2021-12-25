@@ -6,7 +6,7 @@
 #bids_dir: /home/greydon/Documents/data/SEEG
 
 
-#bids_dir: /media/veracrypt6/projects/stealthMRI/imaging/clinical
+bids_dir: /media/veracrypt6/projects/iEEG/imaging/clinical
 
 #bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/DBS
 
@@ -27,7 +27,7 @@ sub_group: patient
 subject_prefix: P
 
 fastsurfer:
-  run: True
+  run: False
   home: "/home/greydon/Documents/GitHub/FastSurfer"
   py: "python3"
   sid: 'fastsurfer'
