@@ -92,12 +92,13 @@ def main():
 		os.mkdir(final_dir)
 	
 	#os.remove(snakemake.input.touch_tar2bids)
+	sub_num=''.join([x for x in os.path.basename(snakemake.params.bids_fold) if x.isnumeric()])
 
 	print('Converting subject {} ...'.format(os.path.basename(snakemake.params.bids_fold)))
 	subject_event = []
 	if snakemake.params.clinical_events:
-		event_dates = pd.read_csv(snakemake.params.clinical_events, sep='\t')
-		subject_event = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in event_dates[event_dates['subject']==os.path.basename(snakemake.params.bids_fold).split('-')[1]]['event_date'].values] if x is not np.nan]
+		event_dates = pd.read_csv(snakemake.params.clinical_events, sep='\t',dtype = str)
+		subject_event = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in event_dates[event_dates['subject']==sub_num]['event_date'].values] if x is not np.nan]
 	
 	orig_sessions = sorted_nicely([x for x in os.listdir(snakemake.params.bids_fold) if os.path.isdir(os.path.join(snakemake.params.bids_fold, x)) and 'ses' in x])
 	
@@ -183,8 +184,9 @@ def main():
 
 					new_file = make_bids_filename(isub, 'ses-'+ilabel, **key_dict)
 					
-					shutil.copyfile(os.path.join(snakemake.params.bids_fold, ises, iscan, ifile), new_file)
-										
+					shutil.copy(os.path.join(snakemake.params.bids_fold, ises, iscan, ifile), new_file)
+					os.chmod(new_file, 0o777)
+
 					if iscan+'/'+ifile in scans_data['filename'].values:
 						name_idx = [i for i,x in enumerate(scans_data['filename'].values) if x == iscan+'/'+ifile][0]
 						data_temp = scans_data.iloc[name_idx,:].to_dict()
@@ -198,7 +200,7 @@ def main():
 		scans_file = make_bids_filename(isub, 'ses-' + ilabel, None, None, None, None, 'scans.json', os.path.dirname(sub_path))
 		scans_json = [x for x in os.listdir(os.path.join(snakemake.params.bids_fold, ises)) if x.endswith('scans.json')]
 		if scans_json:
-			shutil.copyfile2(os.path.join(snakemake.params.bids_fold, ises, scans_json[0]), scans_file)
+			shutil.copy(os.path.join(snakemake.params.bids_fold, ises, scans_json[0]), scans_file)
 		
 		scans_file = make_bids_filename(isub, 'ses-'+ilabel, None, None, None, None, 'scans.tsv', os.path.dirname(sub_path))
 		scans_tsv_new = pd.DataFrame(scans_tsv_new)
@@ -206,7 +208,7 @@ def main():
 	
 	# Check to see if this is the last subject complete, copy main BIDS files if so
 	check_status = [x for x in os.listdir(os.path.join(output_dir,'bids_tmp')) if os.path.isdir(os.path.join(output_dir, 'bids_tmp', x)) and not x.startswith('.')]
-	if len(check_status)==(snakemake.params.num_subs):
+	if len(check_status)==1:
 		bids_files = [x for x in os.listdir(os.path.join(output_dir, 'bids_tmp')) if os.path.isfile(os.path.join(output_dir, 'bids_tmp', x))]
 		for ifile in bids_files:
 			if ifile == 'participants.tsv':
@@ -222,7 +224,7 @@ def main():
 				patient_tsv.to_csv(os.path.join(final_dir, ifile), sep='\t', index=False, na_rep='n/a', line_terminator="")
 			else:
 				if not os.path.exists(os.path.join(final_dir, ifile)):
-					shutil.copyfile(os.path.join(output_dir, 'bids_tmp', ifile), os.path.join(final_dir, ifile))
+					shutil.copy(os.path.join(output_dir, 'bids_tmp', ifile), os.path.join(final_dir, ifile))
 
 		shutil.rmtree(os.path.join(output_dir, 'bids_tmp'))
 	else:

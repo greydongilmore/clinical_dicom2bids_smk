@@ -91,7 +91,7 @@ def infotodict(seqinfo):
 					postop = True
 				
 			if any(substring in s.series_description.upper() for substring in {'STEALTH','3D','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY'}) and not any(substring in s.series_description.upper() for substring in {'IR_FSPGR', 'FSPGR'}):
-				if any(substring in s.series_description.upper() for substring in {'IR_FSPGR', 'FSPGR', 'IR-FSPGR'}):
+				if any(substring in s.series_description.upper() for substring in {'IR_FSPGR', 'FSPGR', 'IR-FSPGR','3D T1 BRAVO'}):
 					if postop:
 						info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeFSPGR'})
 					else:
@@ -178,26 +178,10 @@ def infotodict(seqinfo):
 					info[fa].append({'item': s.series_id})
 		
 		elif any(substring in s.study_description.upper() for substring in {'PET'}):
-			if any(substring in s.series_description.upper() for substring in {'RECON'}) and (s.dim3 == 47) and (s.TR == -1):
-				if 'FBP' in s.series_description.upper():
-					info[pet_acq].append({'item': s.series_id, 'acq': 'FBP'})
-				else:
+			if any(substring in s.series_description.upper() for substring in {'RECON','FBP'}) and (s.dim3 == 47) and (s.TR == -1):
+				if '3D_FBP' not in s.series_description.upper():
 					info[pet].append({'item': s.series_id})
-
-			elif '3d' in s.protocol_name.lower() and (s.dim3 > 1) and (s.TR == -1):
-				if 'axial' in s.series_description.lower():
-					info[pet_acq].append({'item': s.series_id, 'acq': 'AX'})
-				elif 'coronal' in s.series_description.lower():
-					info[pet_acq].append({'item': s.series_id, 'acq': 'COR'})
-				elif 'sagittal' in s.series_description.lower():
-					info[pet_acq].append({'item': s.series_id, 'acq': 'SAG'})
-
-			elif 'volumetrix' in s.protocol_name.lower() and (s.dim3 == 1) and (s.TR == -1):
-				if 'axial' in s.series_description.lower():
-					info[pet_task].append({'item': s.series_id, 'task': 'volumetrix', 'acq': 'AX'})
-				elif 'coronal' in s.series_description.lower():
-					info[pet_task].append({'item': s.series_id, 'task': 'volumetrix', 'acq': 'COR'})
-
+		
 		#   CT SCANS
 		ct_scan = False
 		if s.study_description =='':
