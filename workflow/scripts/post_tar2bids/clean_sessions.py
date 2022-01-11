@@ -96,7 +96,7 @@ def main():
 
 	print('Converting subject {} ...'.format(os.path.basename(snakemake.params.bids_fold)))
 	subject_event = []
-	if snakemake.params.clinical_events:
+	if os.path.exists(snakemake.params.clinical_events):
 		event_dates = pd.read_csv(snakemake.params.clinical_events, sep='\t',dtype = str)
 		subject_event = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in event_dates[event_dates['subject']==sub_num]['event_date'].values] if x is not np.nan]
 	

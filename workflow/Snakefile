@@ -15,7 +15,7 @@ config['out_dir'] = config['bids_dir']
 config['clinical_event_file'] = join(config['bids_dir'], 'events.tsv')
 config['participants_tsv'] = join(config['bids_dir'], 'participants_run.tsv')
 
-if config['participants_tsv']:
+if exists(config['participants_tsv']):
     df = pd.read_table(config['participants_tsv'])
     subjects=df.participant_id.to_list()
     if isinstance(subjects[0],str):

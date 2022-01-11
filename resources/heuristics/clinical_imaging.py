@@ -187,7 +187,7 @@ def infotodict(seqinfo):
 		if s.study_description =='':
 			if any(substring in s.series_description.upper() for substring in {'NO ANGLE'}):
 				ct_scan = True
-		elif any(substring in s.study_description.upper() for substring in {'CT'}):
+		elif any(substring in s.study_description.upper() for substring in {'CT','H31S'}):
 			ct_scan = True
 		
 		if ct_scan:

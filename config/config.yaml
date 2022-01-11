@@ -4,7 +4,7 @@
 #
 
 #bids_dir: /home/greydon/Documents/data/SEEG
-bids_dir: /media/veracrypt6/projects/SEEG
+bids_dir: /home/greydon/data/data/frameSystems
 #bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/DBS
 
 heuristic: resources/heuristics/clinical_imaging.py
@@ -21,7 +21,7 @@ session_calc:
 
 # subject level settings
 sub_group: patient
-subject_prefix: P
+subject_prefix: ''
 
 fastsurfer:
   run: False

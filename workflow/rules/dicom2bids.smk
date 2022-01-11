@@ -22,6 +22,7 @@ rule dicom2tar:
 	params:
 		clinical_events=config['clinical_event_file'],
 		log_dir=join(config['out_dir'],'logs'),
+		prefix=config['subject_prefix'],
 	#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 	script:
 		"../scripts/dicom2tar/main.py"
