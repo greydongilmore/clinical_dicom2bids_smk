@@ -178,15 +178,18 @@ def infotodict(seqinfo):
 					info[fa].append({'item': s.series_id})
 		
 		elif any(substring in s.study_description.upper() for substring in {'PET'}):
-			if any(substring in s.series_description.upper() for substring in {'RECON','FBP'}) and (s.dim3 == 47) and (s.TR == -1):
+			if any(substring in s.series_description.upper() for substring in {'ITERATIVE','RECON','FBP'}) and (s.dim3 == 47) and (s.TR == -1):
 				if '3D_FBP' not in s.series_description.upper():
 					info[pet].append({'item': s.series_id})
-		
-		#   CT SCANS
-		ct_scan = False
-		if s.study_description =='':
-			if any(substring in s.series_description.upper() for substring in {'NO ANGLE'}):
+		else:
+			#   CT SCANS
+			ct_scan = False
+			if s.study_description =='':
+				if any(substring in s.series_description.upper() for substring in {'NO ANGLE'}):
+					ct_scan = True
+			elif any(substring in s.study_description.upper() for substring in {'CT'}):
 				ct_scan = True
+<<<<<<< Updated upstream
 		elif any(substring in s.study_description.upper() for substring in {'CT'}):
 			ct_scan = True
 		elif any(substring in s.series_description.upper() for substring in {'H31S'}):
@@ -195,21 +198,27 @@ def infotodict(seqinfo):
 		if ct_scan:
 			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST', 'POST OP'}
 			frame_list = {'STEROTACTIC', 'STEREOTACTIC', 'STEALTH', 'CTA_COW'}
+=======
+>>>>>>> Stashed changes
 			
-			if ('SCOUT' not in s.series_description.upper()):
-				if any(substring in s.protocol_name.upper() for substring in electrode_list):
-					
-					if ('BONE' in s.series_description.upper()):
-						info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Electrode', 'desc':'BONE'})
-					else:
-						info[ct_acq].append({'item': s.series_id, 'acq': 'Electrode'})
+			if ct_scan:
+				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST', 'POST OP'}
+				frame_list = {'STEROTACTIC', 'STEREOTACTIC', 'STEALTH', 'CTA_COW'}
+				
+				if ('SCOUT' not in s.series_description.upper()):
+					if any(substring in s.protocol_name.upper() for substring in electrode_list):
+						
+						if ('BONE' in s.series_description.upper()):
+							info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Electrode', 'desc':'BONE'})
+						else:
+							info[ct_acq].append({'item': s.series_id, 'acq': 'Electrode'})
 
-				elif any(substring in s.protocol_name.upper() for substring in frame_list):
-					if ('BONE' in s.series_description.upper()):
-						info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Frame', 'desc':'BONE'})
+					elif any(substring in s.protocol_name.upper() for substring in frame_list):
+						if ('BONE' in s.series_description.upper()):
+							info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Frame', 'desc':'BONE'})
+						else:
+							info[ct_acq].append({'item': s.series_id, 'acq': 'Frame'})
 					else:
-						info[ct_acq].append({'item': s.series_id, 'acq': 'Frame'})
-				else:
-					info[ct].append({'item': s.series_id})
+						info[ct].append({'item': s.series_id})
 				
 	return info
