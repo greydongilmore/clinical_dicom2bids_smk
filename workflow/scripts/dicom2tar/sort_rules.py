@@ -309,7 +309,7 @@ def sort_rule_clinical(filename, args):
                                     '-')[1] + '_' + study_date
                             series_number = clean_path(
                                 '{series:04d}'.format(series=dataset.SeriesNumber))
-                            studyID_and_hash_studyInstanceUID = clean_path('.'.join([dataset.StudyID or 'NA',
+                            studyID_and_hash_studyInstanceUID = clean_path('.'.join([dataset.StudyID.replace('_','') or 'NA',
                                                                                      hashcode(dataset.StudyInstanceUID)]))
 
                             path = os.path.join(
@@ -329,7 +329,7 @@ def sort_rule_clinical(filename, args):
                                     '-')[1] + '_' + study_date
                             series_number = clean_path(
                                 '{series:04d}'.format(series=dataset.SeriesNumber))
-                            studyID_and_hash_studyInstanceUID = clean_path('.'.join([dataset.StudyID or 'NA',
+                            studyID_and_hash_studyInstanceUID = clean_path('.'.join([dataset.StudyID.replace('_','') or 'NA',
                                                                                      hashcode(dataset.StudyInstanceUID)]))
 
                             path = os.path.join(
