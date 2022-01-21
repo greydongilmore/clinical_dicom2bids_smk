@@ -4,9 +4,9 @@
 #
 
 #bids_dir: /home/greydon/Documents/data/SEEG
-#bids_dir: /home/greydon/data/data/frameSystems
+bids_dir: /home/greydon/data/data/SEEG_peds
 #bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/DBS
-bids_dir: /media/veracrypt6/projects/SEEG/old_database
+#bids_dir: /media/veracrypt6/projects/SEEG/old_database
 
 heuristic: resources/heuristics/clinical_imaging.py
 dcm_config: resources/dcm_config.json
@@ -22,7 +22,7 @@ session_calc:
 
 # subject level settings
 sub_group: patient
-subject_prefix: 'D'
+subject_prefix: 'P'
 
 fastsurfer:
   run: False
