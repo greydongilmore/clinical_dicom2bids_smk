@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/280235977.svg)](https://zenodo.org/badge/latestdoi/280235977)
+
 # Snakemake workflow: clinical DICOMs to BIDS
 
 ## Description
