@@ -3,10 +3,10 @@
 #--- dicom2bids
 #
 
-#bids_dir: /home/greydon/Documents/data/SEEG
-bids_dir: /home/greydon/data/data/SEEG_peds
+bids_dir: /home/greydon/Documents/data/DBS
+#bids_dir: /home/greydon/data/clinical
 #bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/DBS
-#bids_dir: /media/veracrypt6/projects/SEEG/old_database
+#bids_dir: /media/veracrypt6/projects/stealthMRI
 
 heuristic: resources/heuristics/clinical_imaging.py
 dcm_config: resources/dcm_config.json
@@ -24,8 +24,12 @@ session_calc:
 sub_group: patient
 subject_prefix: 'P'
 
+noncontrast_t1:
+    present: False
+    acq: False
+
 fastsurfer:
-  run: False
+  run: True
   home: "/home/greydon/Documents/GitHub/FastSurfer"
   py: "python3"
   sid: 'fastsurfer'
