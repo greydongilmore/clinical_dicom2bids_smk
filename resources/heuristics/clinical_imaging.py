@@ -178,7 +178,7 @@ def infotodict(seqinfo):
 					info[fa].append({'item': s.series_id})
 		
 		elif any(substring in s.study_description.upper() for substring in {'PET'}):
-			if any(substring in s.series_description.upper() for substring in {'ITERATIVE','RECON','FBP'}) and (s.dim3 == 47) and (s.TR == -1):
+			if any(substring in s.series_description.upper() for substring in {'ITERATIVE','RECON','FBP','MIP'}) and (s.dim3 == 47) and (s.TR == -1):
 				if '3D_FBP' not in s.series_description.upper():
 					info[pet].append({'item': s.series_id})
 		else:

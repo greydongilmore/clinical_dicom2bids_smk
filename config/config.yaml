@@ -3,7 +3,7 @@
 #--- dicom2bids
 #
 
-bids_dir: /home/greydon/Documents/data/DBS
+bids_dir: /home/greydon/data/data/SEEG
 #bids_dir: /home/greydon/data/clinical
 #bids_dir: /media/stereotaxy/3E7CE0407CDFF11F/data/DBS
 #bids_dir: /media/veracrypt6/projects/stealthMRI
@@ -29,7 +29,7 @@ noncontrast_t1:
     acq: False
 
 fastsurfer:
-  run: True
+  run: False
   home: "/home/greydon/Documents/GitHub/FastSurfer"
   py: "python3"
   sid: 'fastsurfer'
