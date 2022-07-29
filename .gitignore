@@ -1,6 +1,6 @@
 *.pyc
-.snakemake/*
-.snakemake/metadata/*
+.snakemake/***
+.snakemake/incomplete/*
 ***/tmp/*
 work/*
 *.simg

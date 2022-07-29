@@ -4,13 +4,17 @@
 #
 
 #laptop
+<<<<<<< Updated upstream
 #bids_dir: /home/greydon/Documents/data/DBS
+=======
+bids_dir: /home/greydon/Documents/data/clinical
+>>>>>>> Stashed changes
 
 #work computer
 bids_dir: /media/data/data/clinical
 
 #external drive
-#bids_dir: /media/veracrypt6/projects/stealthMRI
+#bids_dir: /media/veracrypt6/projects/SEEG/old_database
 
 heuristic: resources/heuristics/clinical_imaging.py
 dcm_config: resources/dcm_config.json
@@ -33,9 +37,9 @@ noncontrast_t1:
     acq: FSPGR
 
 fastsurfer:
-  run: False
+  run: True
   home: "/home/greydon/Documents/GitHub/FastSurfer"
-  py: "python3"
+  py: "python"
   sid: 'fastsurfer'
   batch: 8
   threads: 2

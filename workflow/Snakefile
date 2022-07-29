@@ -32,15 +32,16 @@ final_outputs = []
 
 include: 'rules/common.smk'
 
-if config['fastsurfer']['run']:
-    include: 'rules/fastsurfer.smk'
-
 if config['fmriprep']['run']:
     include: 'rules/fmriprep.smk'
     if not exists(join(config['out_dir'], 'derivatives', 'fmriprep')):
        makedirs(join(config['out_dir'], 'derivatives', 'fmriprep'))
 
 include: 'rules/dicom2bids.smk'
+
+if config['fastsurfer']['run']:
+    include: 'rules/fastsurfer.smk'
+    #include: 'rules/gifti.smk'
 
 rule all:
 	input:
