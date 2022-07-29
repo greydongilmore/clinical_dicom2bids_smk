@@ -36,7 +36,7 @@ def create_overlay_scene(out_dir, template_scene, t1, lh_pial, lh_white, view_pl
 	# Update scene
 	scene_contents = scene_contents.replace("T1w.nii.gz.path", os.path.join(t1_path, t1_name))
 	scene_contents = scene_contents.replace("T1w.nii.gz.name", t1_name)
-	
+
 	scene_contents = scene_contents.replace("lh.pial.surf.gii.path", os.path.join(pial_path, lh_pial_name))
 	scene_contents = scene_contents.replace("lh.pial.surf.gii.name", lh_pial_name)
 	scene_contents = scene_contents.replace("lh.white.surf.gii.path", os.path.join(white_path, lh_white_name))
@@ -63,7 +63,7 @@ def create_overlay_scene(out_dir, template_scene, t1, lh_pial, lh_white, view_pl
 		
 	extent = t1_origin // 2
 	slices = np.linspace(t1_origin - extent, t1_origin + extent, no_slices, dtype=int)
-	
+
 	img_fname_list = []
 	# Write scenes to file
 	for idx, slice_idx in enumerate(slices):
@@ -91,7 +91,7 @@ def create_overlay_scene(out_dir, template_scene, t1, lh_pial, lh_white, view_pl
 		
 		# Clean up files
 		os.remove(scene_fname)
-		
+	
 	return img_fname_list
 
 def arrange_scene(out_img, img_list):
