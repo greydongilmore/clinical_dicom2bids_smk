@@ -41,7 +41,6 @@ include: 'rules/dicom2bids.smk'
 
 if config['fastsurfer']['run']:
     include: 'rules/fastsurfer.smk'
-    #include: 'rules/gifti.smk'
 
 rule all:
 	input:

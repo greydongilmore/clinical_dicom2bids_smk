@@ -19,7 +19,7 @@ def get_pre_t1_filename(wildcards):
 
 if config['fastsurfer']['seg_only']:
     rule fastsurfer_seg_only:
-         input: 
+        input: 
             t1 = get_pre_t1_filename,
         params:
             fastsurfer_run = config['fastsurfer']['home'],
@@ -40,7 +40,7 @@ if config['fastsurfer']['seg_only']:
     final_outputs.extend(expand(rules.fastsurfer_seg_only.output.touch_fastsurfer, subject=subjects))
 else:
     rule fastsurfer_all:
-         input: 
+        input: 
             t1 = get_pre_t1_filename,
         params:
             fastsurfer_run = config['fastsurfer']['home'],
