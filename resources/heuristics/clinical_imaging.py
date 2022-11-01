@@ -194,7 +194,7 @@ def infotodict(seqinfo):
 			
 			if ct_scan:
 				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST', 'POST OP'}
-				frame_list = {'STEROTACTIC', 'STEREOTACTIC', 'STEALTH', 'CTA_COW'}
+				frame_list = {'STEROTACTIC', 'STEREOTACTIC', 'STEALTH', 'CTA_COW','SEMAR'}
 				
 				if ('SCOUT' not in s.series_description.upper()):
 					if any(substring in s.protocol_name.upper() for substring in electrode_list):
