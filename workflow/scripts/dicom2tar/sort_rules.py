@@ -261,7 +261,7 @@ def sort_rule_clinical(filename, args):
             # This will skip any order sheets and localizers
             elif 'ImageType' not in dataset:
                 return None
-            elif any(x in  dataset.ImageType for x in {'LOCALIZER'}):
+            elif any(x in  dataset.ImageType for x in {'LOCALIZER','SECONDARY'}):
                 return None
             else:
                 # if 'Manufacturer' in dataset:
@@ -323,7 +323,7 @@ def sort_rule_clinical(filename, args):
                                 unique=hashcode(dataset.SOPInstanceUID),
                             )
                     else:
-                        if all(x not in dataset.SeriesDescription.lower() for x in {'loc', 'dose report','summary'}) and not all(x.lower() in dataset.ImageType for x in ('secondary')):
+                        if all(x not in dataset.SeriesDescription.lower() for x in {'loc', 'dose report', 'summary'}) and not any(x.upper() in dataset.ImageType for x in ('derived','secondary')):
                             patient = args.prefix + \
                                 [s for s in filename.split(os.sep) if 'sub' in s][0].split(
                                     '-')[1] + '_' + study_date
