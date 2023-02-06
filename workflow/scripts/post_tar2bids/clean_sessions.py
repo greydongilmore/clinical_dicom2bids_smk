@@ -204,7 +204,7 @@ def main():
 		
 		scans_file = make_bids_filename(isub, 'ses-'+ilabel, None, None, None, None, 'scans.tsv', os.path.dirname(sub_path))
 		scans_tsv_new = pd.DataFrame(scans_tsv_new)
-		scans_tsv_new.to_csv(scans_file, sep='\t', index=False, na_rep='n/a', line_terminator="")
+		scans_tsv_new.to_csv(scans_file, sep='\t', index=False, na_rep='n/a', lineterminator="")
 	
 	# Check to see if this is the last subject complete, copy main BIDS files if so
 	check_status = [x for x in os.listdir(os.path.join(output_dir,'bids_tmp')) if os.path.isdir(os.path.join(output_dir, 'bids_tmp', x)) and not x.startswith('.')]
@@ -221,14 +221,14 @@ def main():
 
 				patient_tsv = patient_tsv.sort_values(by=['participant_id']).reset_index(drop=True)
 				patient_tsv['group'] = patient_tsv['group'].replace('control',snakemake.params.sub_group)
-				patient_tsv.to_csv(os.path.join(final_dir, ifile), sep='\t', index=False, na_rep='n/a', line_terminator="")
+				patient_tsv.to_csv(os.path.join(final_dir, ifile), sep='\t', index=False, na_rep='n/a', lineterminator="")
 			else:
 				if not os.path.exists(os.path.join(final_dir, ifile)):
 					shutil.copy(os.path.join(output_dir, 'bids_tmp', ifile), os.path.join(final_dir, ifile))
 
 		shutil.rmtree(os.path.join(output_dir, 'bids_tmp'))
-	else:
-		shutil.rmtree(os.path.join(output_dir, 'bids_tmp',isub))
+	#else:
+		#shutil.rmtree(os.path.join(output_dir, 'bids_tmp',isub))
 		
 if __name__ == "__main__":
 

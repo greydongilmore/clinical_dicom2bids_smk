@@ -261,7 +261,7 @@ def sort_rule_clinical(filename, args):
             # This will skip any order sheets and localizers
             elif 'ImageType' not in dataset:
                 return None
-            elif any(x in  dataset.ImageType for x in {'LOCALIZER','SECONDARY'}):
+            elif any(x in  dataset.ImageType for x in {'LOCALIZER','SECONDARY'}) and 'REFORMATTED' not in dataset.ImageType:
                 return None
             else:
                 # if 'Manufacturer' in dataset:
@@ -323,25 +323,33 @@ def sort_rule_clinical(filename, args):
                                 unique=hashcode(dataset.SOPInstanceUID),
                             )
                     else:
-                        if all(x not in dataset.SeriesDescription.lower() for x in {'loc', 'dose report', 'summary'}) and not any(x.upper() in dataset.ImageType for x in ('derived','secondary')):
-                            patient = args.prefix + \
-                                [s for s in filename.split(os.sep) if 'sub' in s][0].split(
-                                    '-')[1] + '_' + study_date
-                            series_number = clean_path(
-                                '{series:04d}'.format(series=dataset.SeriesNumber))
-                            studyID_and_hash_studyInstanceUID = clean_path('.'.join([dataset.StudyID.replace('_','') or 'NA',
-                                                                                     hashcode(dataset.StudyInstanceUID)]))
+                        if all(x not in dataset.SeriesDescription.lower() for x in {'loc', 'dose report', 'summary'}):
+                            
+                            keep=False
+                            if 'REFORMATTED' in dataset.ImageType:
+                                keep=True
+                            elif not all(any(x in y for y in dataset.ImageType) for x in ('DERIVED','SECONDARY')):
+                                keep=True
 
-                            path = os.path.join(
-                                patient, dataset.StudyDate, studyID_and_hash_studyInstanceUID, modality, series_number)
-                            sorted_filename = '{patient}.{modality}.{series:04d}.{image:04d}.{study_date}.{unique}.dcm'.format(
-                                patient=patient.upper(),
-                                modality=modality,
-                                series=dataset.SeriesNumber,
-                                image=dataset.InstanceNumber,
-                                study_date=dataset.StudyDate,
-                                unique=hashcode(dataset.SOPInstanceUID),
-                            )
+                            if keep:
+                                patient = args.prefix + \
+                                    [s for s in filename.split(os.sep) if 'sub' in s][0].split(
+                                        '-')[1] + '_' + study_date
+                                series_number = clean_path(
+                                    '{series:04d}'.format(series=dataset.SeriesNumber))
+                                studyID_and_hash_studyInstanceUID = clean_path('.'.join([dataset.StudyID.replace('_','') or 'NA',
+                                                                                         hashcode(dataset.StudyInstanceUID)]))
+
+                                path = os.path.join(
+                                    patient, dataset.StudyDate, studyID_and_hash_studyInstanceUID, modality, series_number)
+                                sorted_filename = '{patient}.{modality}.{series:04d}.{image:04d}.{study_date}.{unique}.dcm'.format(
+                                    patient=patient.upper(),
+                                    modality=modality,
+                                    series=dataset.SeriesNumber,
+                                    image=dataset.InstanceNumber,
+                                    study_date=dataset.StudyDate,
+                                    unique=hashcode(dataset.SOPInstanceUID),
+                                )
                 except Exception as e:
                     errorInfoTemp = "\t".join([args.prefix + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], study_date,
                                                clean_path('{series:04d}'.format(series=dataset.SeriesNumber)), 'csaReader'])
