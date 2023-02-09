@@ -4,7 +4,7 @@
 #
 
 #laptop
-bids_dir: /home/greydon/Documents/data/DBS
+bids_dir: /home/greydon/Documents/data/SEEG
 
 #work computer
 #bids_dir: /media/data/data/clinical
@@ -12,7 +12,7 @@ bids_dir: /home/greydon/Documents/data/DBS
 #external drive
 #bids_dir: /media/veracrypt6/projects/SEEG/old_database
 
-heuristic: resources/heuristics/clinical_imaging.py
+heuristic: resources/heuristics/clinical_imaging_old.py
 dcm_config: resources/dcm_config.json
 
 anonymize: False
@@ -33,7 +33,7 @@ noncontrast_t1:
   acq: False
 
 fastsurfer:
-  run: False
+  run: True
   home: "/home/greydon/Documents/GitHub/FastSurfer"
   py: "python"
   sid: 'fastsurfer'
