@@ -21,10 +21,13 @@ if not exists(join(config['out_dir'], 'logs')):
 if exists(config['participants_tsv']):
     df = pd.read_table(config['participants_tsv'])
     subjects=df.participant_id.to_list()
-    if isinstance(subjects[0],str):
-        subjects = [ s.strip('sub-P') for s in subjects]
+    if subjects:
+        if isinstance(subjects[0],str):
+            subjects = [ s.strip('sub-P') for s in subjects]
+        else:
+            subjects = [ str(s).zfill(3) for s in subjects]
     else:
-        subjects = [ str(s).zfill(3) for s in subjects]
+        subjects = [x.split('-')[1] for x in listdir(config['dicom_dir']) if isdir(join(config['dicom_dir'], x))]
 else:
     subjects = [x.split('-')[1] for x in listdir(config['dicom_dir']) if isdir(join(config['dicom_dir'], x))]
 

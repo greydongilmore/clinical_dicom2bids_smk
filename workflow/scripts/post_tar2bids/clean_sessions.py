@@ -32,17 +32,28 @@ def copytree(src, dst, symlinks=False, ignore=None):
 		else:
 			shutil.copy2(s, d)
 			
-def make_bids_filename(subject_id, session_id, task, acq, desc, run, suffix, prefix):
+def make_bids_filename(subject_id, session_id, suffix, prefix, task=None, acq=None, ce=None, rec=None, 
+	dir=None, mod=None, echo=None, hemi=None, space=None,res=None,den=None,label=None,part=None,desc=None,run=None):
 	if isinstance(session_id, str):
 		if 'ses' in session_id:
 			session_id = session_id.split('-')[1]
-			
-	order = OrderedDict([('ses', session_id if session_id is not None else None),
-						 ('task', task if task is not None else None),
-						 ('acq', acq if acq is not None else None),
-						 ('desc', desc if desc is not None else None),
-						 ('run', run if run is not None else None)])
 
+	order = OrderedDict([('ses', session_id),
+						('task', task),
+						('acq', acq),
+						('ce', ce),
+						('rec', rec),
+						('dir', dir),
+						('mod', mod),
+						('echo', echo),
+						('hemi', hemi),
+						('space', space),
+						('res', res),
+						('den', den),
+						('label', label),
+						('part', part),
+						('desc', desc),
+						('run', run)])
 	filename = []
 	if subject_id is not None:
 		filename.append(subject_id)
@@ -170,8 +181,19 @@ def main():
 					key_dict={
 						'task': [],
 						'acq': [],
+						'ce':[],
+						'rec':[],
+						'dir':[],
+						'mod':[],
+						'echo':[],
+						'hemi':[],
+						'space':[],
+						'res':[],
+						'den':[],
 						'desc': [],
-						'run':[]
+						'label':[],
+						'part':[],
+						'run':[],
 					}
 
 					key_dict['suffix']=ifile.split('_')[-1]
@@ -197,12 +219,12 @@ def main():
 			sub_code_path = make_bids_folders(isub.split('-')[1], ilabel, 'info', os.path.join(final_dir,'.heudiconv'), True, False)
 			copytree(os.path.join(os.path.dirname(snakemake.params.bids_fold), '.heudiconv', isub.split('-')[1], ises,'info'), sub_code_path)
 			
-		scans_file = make_bids_filename(isub, 'ses-' + ilabel, None, None, None, None, 'scans.json', os.path.dirname(sub_path))
+		scans_file = make_bids_filename(isub, 'ses-' + ilabel, 'scans.json', os.path.dirname(sub_path))
 		scans_json = [x for x in os.listdir(os.path.join(snakemake.params.bids_fold, ises)) if x.endswith('scans.json')]
 		if scans_json:
 			shutil.copy(os.path.join(snakemake.params.bids_fold, ises, scans_json[0]), scans_file)
 		
-		scans_file = make_bids_filename(isub, 'ses-'+ilabel, None, None, None, None, 'scans.tsv', os.path.dirname(sub_path))
+		scans_file = make_bids_filename(isub, 'ses-'+ilabel, 'scans.tsv', os.path.dirname(sub_path))
 		scans_tsv_new = pd.DataFrame(scans_tsv_new)
 		scans_tsv_new.to_csv(scans_file, sep='\t', index=False, na_rep='n/a', lineterminator="")
 	
@@ -226,9 +248,9 @@ def main():
 				if not os.path.exists(os.path.join(final_dir, ifile)):
 					shutil.copy(os.path.join(output_dir, 'bids_tmp', ifile), os.path.join(final_dir, ifile))
 
-		shutil.rmtree(os.path.join(output_dir, 'bids_tmp'))
+	#	shutil.rmtree(os.path.join(output_dir, 'bids_tmp'))
 	#else:
-		#shutil.rmtree(os.path.join(output_dir, 'bids_tmp',isub))
+	#	shutil.rmtree(os.path.join(output_dir, 'bids_tmp',isub))
 		
 if __name__ == "__main__":
 
