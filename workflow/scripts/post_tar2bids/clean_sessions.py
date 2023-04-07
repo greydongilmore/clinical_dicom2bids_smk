@@ -248,9 +248,9 @@ def main():
 				if not os.path.exists(os.path.join(final_dir, ifile)):
 					shutil.copy(os.path.join(output_dir, 'bids_tmp', ifile), os.path.join(final_dir, ifile))
 
-	#	shutil.rmtree(os.path.join(output_dir, 'bids_tmp'))
-	#else:
-	#	shutil.rmtree(os.path.join(output_dir, 'bids_tmp',isub))
+		shutil.rmtree(os.path.join(output_dir, 'bids_tmp'))
+	else:
+		shutil.rmtree(os.path.join(output_dir, 'bids_tmp',isub))
 		
 if __name__ == "__main__":
 

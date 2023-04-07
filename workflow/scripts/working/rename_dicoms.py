@@ -194,8 +194,8 @@ if debug:
 	snakemake = Namespace(output=output, input=input)
 	
 
-sourcedata=r'/home/greydon/Documents/data/SEEG/sourcedata/dicoms'
-sub_num='sub-107'
+sourcedata=r'/home/greydon/Documents/data/single/sourcedata/dicoms'
+sub_num='sub-014'
 
 
 for sub_num in sorted_nicely([x for x in os.listdir(sourcedata) if x.startswith('sub')]):

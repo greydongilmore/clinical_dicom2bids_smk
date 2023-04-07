@@ -260,15 +260,15 @@ def infotodict(seqinfo):
 		
 		
 		elif any(substring in s.study_description.upper() for substring in {'CT'}) and all(x not in s.series_description.upper() for x in ('SCOUT','SUMMARY')):
-			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP'}
+			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','VOL. 0.5','SEMAR 0.5'}
 			frame_list = {'STEROTACTIC', 'STEREOTACTIC','STEREOTACTIC FRAME', 'STEALTH', 'CTA_COW','Axial 1.200 CE'}
 			
-			if any(substring in s.protocol_name.upper() for substring in electrode_list):
+			if any(substring in s.protocol_name.upper() for substring in electrode_list) or any(substring in s.series_description.upper() for substring in electrode_list):
 				if any(x.upper() in s.series_description.upper() for x in ('BONE','SEMAR')):
 					info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Electrode', 'desc':'BONE'})
 				else:
 					info[ct_acq].append({'item': s.series_id, 'acq': 'Electrode'})
-			elif any(x.upper() in s.protocol_name.upper() for x in frame_list):
+			elif any(x.upper() in s.protocol_name.upper() for x in frame_list) or any(substring in s.series_description.upper() for substring in frame_list):
 				if any(x.upper() in s.series_description.upper() for x in ('BONE','SEMAR')):
 					info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Frame', 'desc':'BONE'})
 				else:
