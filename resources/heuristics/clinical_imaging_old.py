@@ -219,8 +219,19 @@ def infotodict(seqinfo):
 
 			elif any(substring.upper() in s.series_description.upper() for substring in {'DWI', 'DTI', 'DIFFUSION','DWI-DTI'}):
 				if len(is_diffusion_derived(s.series_description))>=1:
-					str_derv=diff_dic[is_diffusion_derived(s.series_description)[0].upper()]
-					info[dwi_acq].append({'item': s.series_id,'acq': str_derv if not postop else 'Electrode'+str_derv})
+					srs_desc=None
+					if '_' in s.series_description:	
+						if not any(s.series_description.split('_')[0]==x for x in list(diff_dic)):
+							if any(s.series_description.split('_')[-1]==x for x in list(diff_dic)):
+								srs_desc=s.series_description.split('_')[-1]
+						else:
+							srs_desc=s.series_description.split('_')[0]
+					else:
+						srs_desc=s.series_description[0]
+					
+					if srs_desc is not None:
+						str_derv=diff_dic[is_diffusion_derived(s.series_description)[0].upper()]
+						info[dwi_acq].append({'item': s.series_id,'acq': str_derv if not postop else 'Electrode'+str_derv})
 				else:
 					if postop:
 						info[dwi_acq].append({'item': s.series_id, 'acq': 'Electrode'})
