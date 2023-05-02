@@ -4,7 +4,7 @@
 #
 
 #laptop
-bids_dir: /home/greydon/Documents/data/clinical
+bids_dir: /home/greydon/Documents/data/DBS
 
 #work computer
 #bids_dir: /media/data/data/clinical
