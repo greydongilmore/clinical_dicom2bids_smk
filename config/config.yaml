@@ -4,13 +4,15 @@
 #
 
 #laptop
-bids_dir: /home/greydon/Documents/data/SEEG
+#bids_dir: /home/greydon/Documents/data/single
 
 #work computer
 #bids_dir: /media/data/data/clinical
 
 #external drive
 #bids_dir: /media/veracrypt6/projects/SEEG/old_database
+bids_dir: /media/greydon/lhsc_data/DBS
+
 
 heuristic: resources/heuristics/clinical_imaging_old.py
 dcm_config: resources/dcm_config.json
@@ -38,10 +40,10 @@ fastsurfer:
   py: "python"
   sid: 'fastsurfer'
   batch: 8
-  threads: 2
-  order: 0    #(0=nearest,1=linear(default),2=quadratic,3=cubic)
-  seg_only: True
+  threads: 4
+  vox_size: 1    #(0=nearest,1=linear(default),2=quadratic,3=cubic)
   vol_segstats: True
+  version: 'dev' # master or dev
 
 fmriprep:
   run: False
