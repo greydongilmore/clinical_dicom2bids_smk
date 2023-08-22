@@ -116,8 +116,12 @@ def main():
 	sessionDates = {'ses_num':[],'session':[]}
 	for ises in orig_sessions:
 		if not subject_event:
-			sessionDates['ses_num']._append(ises)
-			sessionDates['session']._append('pre')
+			try:
+				sessionDates['ses_num']._append(ises)
+				sessionDates['session']._append('pre')
+			except:
+				sessionDates['ses_num'].append(ises)
+				sessionDates['session'].append('pre')
 		else:
 			scans_tsv = [x for x in os.listdir(os.path.join(snakemake.params.bids_fold, ises)) if x.endswith('scans.tsv')]
 			scans_data = pd.read_table(os.path.join(snakemake.params.bids_fold, ises, scans_tsv[0]))
@@ -237,7 +241,10 @@ def main():
 				if os.path.exists(os.path.join(final_dir, ifile)):
 					patient_tsv_old = pd.read_csv(os.path.join(output_dir, 'bids_tmp', 'participants.tsv'), sep='\t')
 					patient_tsv = pd.read_csv(os.path.join(final_dir, 'participants.tsv'), sep='\t')
-					patient_tsv = patient_tsv._append(patient_tsv_old).reset_index(drop=True)
+					try:
+						patient_tsv = patient_tsv._append(patient_tsv_old).reset_index(drop=True)
+					except:
+						patient_tsv = patient_tsv.append(patient_tsv_old).reset_index(drop=True)
 				else:
 					patient_tsv = pd.read_csv(os.path.join(output_dir, 'bids_tmp', 'participants.tsv'), sep='\t')
 
