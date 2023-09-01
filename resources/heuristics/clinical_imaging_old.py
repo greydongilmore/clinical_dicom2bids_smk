@@ -143,7 +143,7 @@ def infotodict(seqinfo):
 				if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','STEALTH POST','MPRAGE POST'}):
 					postop = True
 				
-			if any(substring.upper() in s.series_description.upper() for substring in {'STEALTH', 'STEALTH BRAVO', 'AX STEALTH BRAVO','3D','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE'}) and 'FSPGR' not in s.series_description.upper():
+			if any(substring.upper() in s.series_description.upper() for substring in {'STEALTH', 'STEALTH BRAVO', 'AX STEALTH BRAVO','3D','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR')):
 				if 'MPGR' in s.series_description.upper():
 					if postop:
 						info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeMPGR'})

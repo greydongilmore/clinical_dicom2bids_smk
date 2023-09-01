@@ -19,7 +19,7 @@ if not exists(join(config['out_dir'], 'logs')):
     makedirs(join(config['out_dir'], 'logs'))
 
 if exists(config['participants_tsv']):
-    df = pd.read_table(config['participants_tsv'])
+    df = pd.read_table(config['participants_tsv'],dtype=str)
     subjects=df.participant_id.to_list()
     if subjects:
         if isinstance(subjects[0],str):
