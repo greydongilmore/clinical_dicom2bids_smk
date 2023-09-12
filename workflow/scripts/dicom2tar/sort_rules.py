@@ -259,9 +259,9 @@ def sort_rule_clinical(filename, args):
                 return None
 
             # This will skip any order sheets and localizers
-            elif 'ImageType' not in dataset:
+            elif all(y not in  dataset for y in {'ImageType','Image Type'}):
                 return None
-            elif any(x in  dataset.ImageType for x in {'LOCALIZER','SECONDARY'}) and 'REFORMATTED' not in dataset.ImageType:
+            elif any(x in  dataset.ImageType for x in {'LOCALIZER','SECONDARY'}) & all(y not in dataset.ImageType for y in {'REFORMATTED','ORIGINAL','PRIMARY'}):
                 return None
             else:
                 # if 'Manufacturer' in dataset:
@@ -273,7 +273,12 @@ def sort_rule_clinical(filename, args):
                 try:
                     csaReader = ds.wrapper_from_data(dataset)
                     modality = dataset.Modality
-
+                    
+                    if 'StudyID' in dataset and len(dataset.StudyID) > 0:
+                        StudyID = dataset.StudyID.replace('_','')
+                    else:
+                        StudyID = 'NA'
+                    
                     # --- INTRAOP X-RAY determination
                     if any(substring in modality for substring in {'Intraoperative', 'Skull', 'XA', 'RF','CR','OT'}):
                         if 'CR' not in dataset.Modality:
@@ -309,7 +314,7 @@ def sort_rule_clinical(filename, args):
                                     '-')[1] + '_' + study_date
                             series_number = clean_path(
                                 '{series:04d}'.format(series=dataset.SeriesNumber))
-                            studyID_and_hash_studyInstanceUID = clean_path('.'.join([dataset.StudyID.replace('_','') or 'NA',
+                            studyID_and_hash_studyInstanceUID = clean_path('.'.join([StudyID ,
                                                                                      hashcode(dataset.StudyInstanceUID)]))
 
                             path = os.path.join(
@@ -325,31 +330,24 @@ def sort_rule_clinical(filename, args):
                     else:
                         if all(x not in dataset.SeriesDescription.lower() for x in {'loc', 'dose report', 'summary'}):
                             
-                            keep=False
-                            if 'REFORMATTED' in dataset.ImageType:
-                                keep=True
-                            elif not all(any(x in y for y in dataset.ImageType) for x in ('DERIVED','SECONDARY')):
-                                keep=True
+                            patient = args.prefix + \
+                                [s for s in filename.split(os.sep) if 'sub' in s][0].split(
+                                    '-')[1] + '_' + study_date
+                            series_number = clean_path(
+                                '{series:04d}'.format(series=dataset.SeriesNumber))
+                            studyID_and_hash_studyInstanceUID = clean_path('.'.join([StudyID,
+                                                                                     hashcode(dataset.StudyInstanceUID)]))
 
-                            if keep:
-                                patient = args.prefix + \
-                                    [s for s in filename.split(os.sep) if 'sub' in s][0].split(
-                                        '-')[1] + '_' + study_date
-                                series_number = clean_path(
-                                    '{series:04d}'.format(series=dataset.SeriesNumber))
-                                studyID_and_hash_studyInstanceUID = clean_path('.'.join([dataset.StudyID.replace('_','') or 'NA',
-                                                                                         hashcode(dataset.StudyInstanceUID)]))
-
-                                path = os.path.join(
-                                    patient, dataset.StudyDate, studyID_and_hash_studyInstanceUID, modality, series_number)
-                                sorted_filename = '{patient}.{modality}.{series:04d}.{image:04d}.{study_date}.{unique}.dcm'.format(
-                                    patient=patient.upper(),
-                                    modality=modality,
-                                    series=dataset.SeriesNumber,
-                                    image=dataset.InstanceNumber,
-                                    study_date=dataset.StudyDate,
-                                    unique=hashcode(dataset.SOPInstanceUID),
-                                )
+                            path = os.path.join(
+                                patient, dataset.StudyDate, studyID_and_hash_studyInstanceUID, modality, series_number)
+                            sorted_filename = '{patient}.{modality}.{series:04d}.{image:04d}.{study_date}.{unique}.dcm'.format(
+                                patient=patient.upper(),
+                                modality=modality,
+                                series=dataset.SeriesNumber,
+                                image=dataset.InstanceNumber,
+                                study_date=dataset.StudyDate,
+                                unique=hashcode(dataset.SOPInstanceUID),
+                            )
                 except Exception as e:
                     errorInfoTemp = "\t".join([args.prefix + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], study_date,
                                                clean_path('{series:04d}'.format(series=dataset.SeriesNumber)), 'csaReader'])

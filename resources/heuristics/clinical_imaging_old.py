@@ -255,7 +255,7 @@ def infotodict(seqinfo):
 						info[t1w_acq].append({'item': s.series_id, 'acq': 'SSFSE' + orientation})
 		
 		
-		elif any(substring in s.study_description.upper() for substring in {'CT','HEAD','HEAD-STEREO'}) and all(x not in s.series_description.upper() for x in ('SCOUT','SUMMARY')):
+		elif any(substring in s.study_description.upper() for substring in {'CT','HEAD','HEAD-STEREO'}) and all(x not in s.series_description.upper() for x in ('SUMMARY')):
 			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','VOL. 0.5','SEMAR 0.5'}
 			frame_list = {'STEROTACTIC', 'STEREOTACTIC','STEREOTACTIC FRAME', 'STEALTH', 'CTA_COW','Axial 1.200 CE','HEAD-STEREO'}
 			
