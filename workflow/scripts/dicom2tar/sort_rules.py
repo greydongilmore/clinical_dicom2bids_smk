@@ -243,7 +243,7 @@ def sort_rule_clinical(filename, args):
 
         try:
             error_file = os.path.join(args.log_dir, 'errorInfo.tsv')
-            
+           
             dataset = pydicom.read_file(filename, stop_before_pixels=True, force=True)
             study_date = dataset.StudyDate[0:4] + '_' + dataset.StudyDate[4:6] + '_' + dataset.StudyDate[6:8]
             
@@ -257,11 +257,12 @@ def sort_rule_clinical(filename, args):
                                            clean_path('{series:04d}'.format(series=dataset.SeriesNumber)), dataset.Modality])
                 write_error_file(error_file, errorInfoTemp)
                 return None
-
+            elif (dataset.Modality == 'CT') and (dataset.Rows != dataset.Columns):
+                return None
             # This will skip any order sheets and localizers
             elif all(y not in  dataset for y in {'ImageType','Image Type'}):
                 return None
-            elif any(x in  dataset.ImageType for x in {'LOCALIZER','SECONDARY'}) & all(y not in dataset.ImageType for y in {'REFORMATTED','ORIGINAL','PRIMARY'}):
+            elif all(x in  dataset.ImageType for x in {'LOCALIZER','SECONDARY'}):
                 return None
             else:
                 # if 'Manufacturer' in dataset:

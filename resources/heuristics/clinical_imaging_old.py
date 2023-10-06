@@ -137,7 +137,7 @@ def infotodict(seqinfo):
 	}
 	
 	for idx, s in enumerate(seqinfo):
-		if any(substring in s.study_description.upper() for substring in {'MR'}):
+		if any(substring.upper() in s.study_description.upper() for substring in {'MR'}):
 			postop = False
 			if 'SAR' in s.series_description.upper() or any(x in s.protocol_name.upper() for x in {'SAFE', 'STIMULATOR', 'STIM SAFE', 'POST', 'POST OP','POST-OP'}):
 				if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','STEALTH POST','MPRAGE POST'}):
@@ -188,7 +188,7 @@ def infotodict(seqinfo):
 				else:
 					info[t1w_acq].append({'item': s.series_id, 'acq': 'FSPGR'})
 			
-			elif any(substring in s.series_description.upper() for substring in {'SWI'}):
+			elif any(substring.upper() in s.series_description.upper() for substring in {'SWI'}):
 				if len(is_swi_derived(s.series_description))>=1:
 					str_derv=is_swi_derived(s.series_description)[0].upper()
 					if str_derv == 'MAG':
@@ -229,7 +229,7 @@ def infotodict(seqinfo):
 					else:
 						info[dwi].append({'item': s.series_id})
 
-			elif any(substring in s.series_description.upper() for substring in {'AX', 'COR','SAG'}) and ('3D' not in s.series_description.upper()):
+			elif any(substring.upper() in s.series_description.upper() for substring in {'AX', 'COR','SAG'}) and ('3D' not in s.series_description.upper()):
 				if ('AX' in s.series_description.upper()):
 					orientation = 'Tra'
 				elif ('COR' in s.series_description.upper()):
@@ -238,40 +238,40 @@ def infotodict(seqinfo):
 					orientation = 'Sag'
 				
 				if postop:
-					if any(substring in s.series_description.upper() for substring in {'T2', '2D'}):
+					if any(substring.upper() in s.series_description.upper() for substring in {'T2', '2D'}):
 						info[t2w].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
-					elif any(substring in s.series_description.upper() for substring in {'PD'}):
+					elif any(substring.upper() in s.series_description.upper() for substring in {'PD'}):
 						info[t1w_pd].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
-					elif any(substring in s.series_description.upper() for substring in {'FLAIR'}):
+					elif any(substring.upper() in s.series_description.upper() for substring in {'FLAIR'}):
 						info[t1w_flair].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
 				else:
-					if any(substring in s.series_description.upper() for substring in {'T2','2D'}):
+					if any(substring.upper() in s.series_description.upper() for substring in {'T2','2D'}):
 						info[t2w].append({'item': s.series_id, 'acq': orientation})
-					elif any(substring in s.series_description.upper() for substring in {'PD'}):
+					elif any(substring.upper() in s.series_description.upper() for substring in {'PD'}):
 						info[t1w_pd].append({'item': s.series_id, 'acq': orientation})
-					elif any(substring in s.series_description.upper() for substring in {'FLAIR'}):
+					elif any(substring.upper() in s.series_description.upper() for substring in {'FLAIR'}):
 						info[t1w_flair].append({'item': s.series_id, 'acq': orientation})
-					elif any(substring in s.series_description.upper() for substring in {'SSFSE'}):
+					elif any(substring.upper() in s.series_description.upper() for substring in {'SSFSE'}):
 						info[t1w_acq].append({'item': s.series_id, 'acq': 'SSFSE' + orientation})
 		
 		
-		elif any(substring in s.study_description.upper() for substring in {'CT','HEAD','HEAD-STEREO'}) and all(x not in s.series_description.upper() for x in ('SUMMARY')):
+		elif any(substring.upper() in s.study_description.upper() for substring in {'CT','HEAD','HEAD-STEREO'}) and all(x.upper() not in s.series_description.upper() for x in {'SUMMARY'}):
 			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','VOL. 0.5','SEMAR 0.5'}
 			frame_list = {'STEROTACTIC', 'STEREOTACTIC','STEREOTACTIC FRAME', 'STEALTH', 'CTA_COW','Axial 1.200 CE','HEAD-STEREO'}
 			
-			if any(substring in s.protocol_name.upper() for substring in electrode_list) or any(substring in s.series_description.upper() for substring in electrode_list):
+			if any(substring.upper() in s.protocol_name.upper() for substring in electrode_list) or any(substring.upper() in s.series_description.upper() for substring in electrode_list):
 				if any(x.upper() in s.series_description.upper() for x in ('BONE','SEMAR')):
 					info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Electrode', 'desc':'BONE'})
 				else:
 					info[ct_acq].append({'item': s.series_id, 'acq': 'Electrode'})
-			elif any(x.upper() in s.protocol_name.upper() for x in frame_list) or any(substring in s.series_description.upper() for substring in frame_list):
+			elif any(x.upper() in s.protocol_name.upper() for x in frame_list) or any(substring.upper() in s.series_description.upper() for substring in frame_list):
 				if any(x.upper() in s.series_description.upper() for x in ('BONE','SEMAR')):
 					info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Frame', 'desc':'BONE'})
 				else:
 					info[ct_acq].append({'item': s.series_id, 'acq': 'Frame'})
 				
-		elif any(substring in s.study_description.upper() for substring in {'PET'}) or any(substring in s.series_description.upper() for substring in {'PET CORR'}):
-			if any(substring in s.series_description.upper() for substring in {'ITERATIVE','RECON','FBP','PET CORR'}):
+		elif any(substring.upper() in s.study_description.upper() for substring in {'PET'}) or any(substring.upper() in s.series_description.upper() for substring in {'PET CORR'}):
+			if any(substring.upper() in s.series_description.upper() for substring in {'ITERATIVE','RECON','FBP','PET CORR'}):
 				if '3D_FBP' not in s.series_description.upper():
 					info[pet].append({'item': s.series_id})
 				
