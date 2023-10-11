@@ -212,7 +212,7 @@ def infotodict(seqinfo):
 				if len(is_diffusion_derived(s.series_description))>=1:
 					srs_desc=None
 					if '_' in s.series_description:	
-						if not any(s.series_description.split('_')[0]==x for x in list(diff_dic)):
+						if any(s.series_description.split('_')[0]!=x for x in list(diff_dic)):
 							if any(s.series_description.split('_')[-1]==x for x in list(diff_dic)):
 								srs_desc=s.series_description.split('_')[-1]
 						else:
@@ -254,17 +254,17 @@ def infotodict(seqinfo):
 					elif any(substring.upper() in s.series_description.upper() for substring in {'SSFSE'}):
 						info[t1w_acq].append({'item': s.series_id, 'acq': 'SSFSE' + orientation})
 		
-		
-		elif any(substring.upper() in s.study_description.upper() for substring in {'CT','HEAD','HEAD-STEREO'}) and all(x.upper() not in s.series_description.upper() for x in {'SUMMARY'}):
-			electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','VOL. 0.5','SEMAR 0.5'}
-			frame_list = {'STEROTACTIC', 'STEREOTACTIC','STEREOTACTIC FRAME', 'STEALTH', 'CTA_COW','Axial 1.200 CE','HEAD-STEREO'}
+		elif any(substring in s.study_description.upper() for substring in {'CT','HEAD','HEAD-STEREO'}) and 'SUMMARY' not in s.series_description.upper():
+			electrode_list = ('OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','0.625 X 0.625')
+			electrode_list_exact=('VOL. 0.5')
+			frame_list = ('STEROTACTIC', 'STEREOTACTIC','STEREOTACTIC FRAME', 'STEALTH', 'CTA_COW','Axial 1.200 CE','HEAD-STEREO','1.25 X 1.25')
 			
-			if any(substring.upper() in s.protocol_name.upper() for substring in electrode_list) or any(substring.upper() in s.series_description.upper() for substring in electrode_list):
+			if any(substring in ' '.join(s.protocol_name.upper().split()) for substring in electrode_list) or any(substring in s.series_description.upper() for substring in electrode_list) or any(substring == s.series_description.upper() for substring in electrode_list_exact) and all(x.upper() not in ' '.join(s.protocol_name.upper().split()) for x in frame_list):
 				if any(x.upper() in s.series_description.upper() for x in ('BONE','SEMAR')):
 					info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Electrode', 'desc':'BONE'})
 				else:
 					info[ct_acq].append({'item': s.series_id, 'acq': 'Electrode'})
-			elif any(x.upper() in s.protocol_name.upper() for x in frame_list) or any(substring.upper() in s.series_description.upper() for substring in frame_list):
+			elif any(x.upper() in ' '.join(s.protocol_name.upper().split()) for x in frame_list) or any(substring.upper() in s.series_description.upper() for substring in frame_list):
 				if any(x.upper() in s.series_description.upper() for x in ('BONE','SEMAR')):
 					info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Frame', 'desc':'BONE'})
 				else:

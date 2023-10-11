@@ -260,9 +260,9 @@ def sort_rule_clinical(filename, args):
             elif (dataset.Modality == 'CT') and (dataset.Rows != dataset.Columns):
                 return None
             # This will skip any order sheets and localizers
-            elif all(y not in  dataset for y in {'ImageType','Image Type'}):
+            elif all(y not in dataset for y in ('ImageType','Image Type')):
                 return None
-            elif all(x in  dataset.ImageType for x in {'LOCALIZER','SECONDARY'}):
+            elif any(x.upper() in [z.upper() for z in list(dataset.ImageType)] for x in ('LOCALIZER','SECONDARY')):
                 return None
             else:
                 # if 'Manufacturer' in dataset:
@@ -281,7 +281,7 @@ def sort_rule_clinical(filename, args):
                         StudyID = 'NA'
                     
                     # --- INTRAOP X-RAY determination
-                    if any(substring in modality for substring in {'Intraoperative', 'Skull', 'XA', 'RF','CR','OT'}):
+                    if any(substring in modality for substring in ('Intraoperative', 'Skull', 'XA', 'RF','CR','OT')):
                         if 'CR' not in dataset.Modality:
                             if not args.clinical_events:
                                 #clinical_events = os.path.join(os.path.dirname(os.path.dirname(args.output_dir)), 'clinical_events.tsv')
