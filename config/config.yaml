@@ -4,7 +4,7 @@
 #
 
 #laptop
-bids_dir: /home/greydon/Documents/data/SEEG_rerun
+bids_dir: /home/greydon/Documents/datasets/single
 
 #work computer
 #bids_dir: /media/data/data/clinical
@@ -15,6 +15,7 @@ bids_dir: /home/greydon/Documents/data/SEEG_rerun
 
 heuristic: resources/heuristics/clinical_imaging_old.py
 dcm_config: resources/dcm_config.json
+remove_temp: False
 
 anonymize: False
 

@@ -35,7 +35,7 @@ rule tar2bids:
 		bids = directory(join(config['out_dir'], 'bids_tmp')),
 		dcm_config=config['dcm_config']
 	output:
-		touch_tar2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done")),
+		tmp_dir = directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id))
 	#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 	shell:
 		'heudiconv --files {input.tar} -o {params.bids} -f {params.heuristic_file} -c dcm2niix --dcmconfig {params.dcm_config} -b'
@@ -43,9 +43,11 @@ rule tar2bids:
 if config['fastsurfer']['run'] or config['fmriprep']['run']:
 	rule cleanSessions:
 		input:
-			touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
+			#touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
+			tmp_dir=rules.tar2bids.output.tmp_dir,
 		output:
-			touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
+			#touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
+			tmp_dir = directory(join(config['out_dir'], 'bids', 'sub-' + subject_id)),
 			t1w_file= bids(root=join(config['out_dir'], 'bids'), subject=subject_id, datatype='anat', session='pre', run='01', suffix='T1w.nii.gz'),
 		params:
 			clinical_events=config['clinical_event_file'],
@@ -59,9 +61,10 @@ if config['fastsurfer']['run'] or config['fmriprep']['run']:
 else:
 	rule cleanSessions:
 		input:
-			touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
+			#touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
+			tmp_dir=rules.tar2bids.output.tmp_dir,
 		output:
-			touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
+			tmp_dir = directory(join(config['out_dir'], 'bids', 'sub-' + subject_id)),
 		params:
 			clinical_events=config['clinical_event_file'],
 			bids_fold = join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id),
@@ -72,7 +75,8 @@ else:
 		script:
 			"../scripts/post_tar2bids/clean_sessions.py"
 
-final_outputs.extend(expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"), subject=subjects))
-final_outputs.extend(expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done"), subject=subjects))
+final_outputs.extend(expand(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id), subject=subjects))
+final_outputs.extend(expand(join(config['out_dir'], 'bids', 'sub-' + subject_id), subject=subjects))
+
 if config['fastsurfer']['run'] or config['fmriprep']['run']:
 	final_outputs.extend(expand(bids(root=join(config['out_dir'], 'bids'), subject=subject_id, datatype='anat', session='pre', run='01', suffix='T1w.nii.gz'), subject=subjects))

@@ -96,7 +96,7 @@ def make_bids_folders(subject_id, session_id, kind, output_path, make_dir, overw
 	return path
 
 def main():
-	output_dir=os.path.dirname(os.path.dirname(snakemake.input.touch_tar2bids))
+	output_dir=os.path.dirname(os.path.dirname(snakemake.input.tmp_dir))
 
 	final_dir = os.path.join(output_dir, 'bids')
 	if not os.path.exists(final_dir):
@@ -248,16 +248,18 @@ def main():
 				else:
 					patient_tsv = pd.read_csv(os.path.join(output_dir, 'bids_tmp', 'participants.tsv'), sep='\t')
 
+				patient_tsv=patient_tsv.drop_duplicates(subset='participant_id', keep="last")
 				patient_tsv = patient_tsv.sort_values(by=['participant_id']).reset_index(drop=True)
 				patient_tsv['group'] = patient_tsv['group'].replace('control',snakemake.params.sub_group)
 				patient_tsv.to_csv(os.path.join(final_dir, ifile), sep='\t', index=False, na_rep='n/a', lineterminator="")
 			else:
 				if not os.path.exists(os.path.join(final_dir, ifile)):
 					shutil.copy(os.path.join(output_dir, 'bids_tmp', ifile), os.path.join(final_dir, ifile))
-
-		shutil.rmtree(os.path.join(output_dir, 'bids_tmp'))
+		if snakemake.config['remove_temp']:
+			shutil.rmtree(os.path.join(output_dir, 'bids_tmp'))
 	else:
-		shutil.rmtree(os.path.join(output_dir, 'bids_tmp',isub))
+		if snakemake.config['remove_temp']:
+			shutil.rmtree(os.path.join(output_dir, 'bids_tmp',isub))
 		
 if __name__ == "__main__":
 
