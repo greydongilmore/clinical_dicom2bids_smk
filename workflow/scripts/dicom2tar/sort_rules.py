@@ -340,13 +340,13 @@ def sort_rule_clinical(filename, args):
                                                                                      hashcode(dataset.StudyInstanceUID)]))
 
                             path = os.path.join(
-                                patient, dataset.StudyDate, studyID_and_hash_studyInstanceUID, modality, series_number)
+                                patient, '_'.join([dataset.StudyDate, dataset.StudyTime.split(".")[0].zfill(6)]), studyID_and_hash_studyInstanceUID, modality, series_number)
                             sorted_filename = '{patient}.{modality}.{series:04d}.{image:04d}.{study_date}.{unique}.dcm'.format(
                                 patient=patient.upper(),
                                 modality=modality,
                                 series=dataset.SeriesNumber,
                                 image=dataset.InstanceNumber,
-                                study_date=dataset.StudyDate,
+                                study_date='_'.join([dataset.StudyDate, dataset.StudyTime.split(".")[0].zfill(6)]),
                                 unique=hashcode(dataset.SOPInstanceUID),
                             )
                 except Exception as e:

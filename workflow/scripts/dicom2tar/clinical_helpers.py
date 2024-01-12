@@ -18,7 +18,6 @@ def tarSession(args):
 	tar_files = [f for f in os.listdir(args.output_dir) if f.endswith('.tar')]
 	subjects = np.unique([x.split('_')[0] for x in tar_files])
 
-
 	if os.path.exists(os.path.join(output_dir, 'clinical_events.tsv')) and not args.clinical_events:
 		event_dates = pd.read_csv(os.path.join(output_dir, 'clinical_events.tsv'), sep='\t')
 		event_dates = or_dates.sort_values(by=['subject']).reset_index(drop=True)
@@ -27,7 +26,7 @@ def tarSession(args):
 	for isub in subjects:
 		tar_files_sub = [f for f in os.listdir(args.output_dir) if f.startswith(isub)]
 		tar_files_sub_check = tar_files_sub[0].split('_')
-		if len(tar_files_sub_check) > 7:
+		if len(tar_files_sub_check) > 8:
 			print('Incorrect .tar filname for subject ' + isub)
 			continue
 		else:
@@ -35,7 +34,7 @@ def tarSession(args):
 			# subject_or = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in or_dates[or_dates['subject']==isub]['or_date'].values] if x is not np.nan]
 			# if len(subject_or)>1:
 			#     subject_or = [subject_or[0]] # only date first OR date for now
-			tar_files_dates = [datetime.datetime.strptime(x.split('_')[4], '%Y%m%d') for x in tar_files_sub]
+			tar_files_dates = [datetime.datetime.strptime(x.split('_')[4]+x.split('_')[5], '%Y%m%d%H%M%S') for x in tar_files_sub]
 			date_sort_idx = np.argsort(tar_files_dates)
 			
 			tar_files_sub = [tar_files_sub[i] for i in date_sort_idx]
@@ -44,7 +43,7 @@ def tarSession(args):
 			sessionDates = {'date':[],'session':[]}
 			session = 1
 			for idate in tar_files_dates:
-				sessionDates['date'].append(idate.strftime('%Y%m%d'))
+				sessionDates['date'].append(idate.strftime('%Y%m%d%H%M%S'))
 				sessionDates['session'].append(str(session).zfill(3))
 				session += 1
 					

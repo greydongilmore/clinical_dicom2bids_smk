@@ -113,6 +113,15 @@ def infotodict(seqinfo):
 	mag_gre = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_part-mag_run-{item:02d}_GRE')
 	phase_gre = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_part-phase_run-{item:02d}_GRE')
 
+	#7T T2 SPACE
+	spc_T2w = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-7T_run-{item:02d}_T2w')
+	DIS2D_spc_T2w = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-7T_rec-DIS2D_run-{item:02d}_T2w')
+	DIS3D_spc_T2w = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-7T_rec-DIS3D_run-{item:02d}_T2w')
+
+	#7T MP2RAGE
+	t1w_mprage = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-7T_run-{item:02d}_T1w')
+	t1map = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-7T_run-{item:02d}_T1map')
+
 	info = {t1w:[],
 			t1w_acq:[],
 			t2w:[],
@@ -136,11 +145,35 @@ def infotodict(seqinfo):
 			swi_gre_elec:[],
 			mag_gre:[],
 			phase_gre:[],
+			spc_T2w:[],
+			DIS2D_spc_T2w:[],
+			DIS3D_spc_T2w:[],
+			t1w_mprage:[],
+			t1map:[],
 	}
 	
 	for idx, s in enumerate(seqinfo):
 		if s.study_description is not None:
-			if any(substring.upper() in s.study_description.upper() for substring in {'MR'}):
+
+			#7T
+			if 'neuroanalytics' in s.study_description.lower():
+
+				if ('spc_T2' in s.series_description or 'T2w_SPC' in s.series_description or 'T2w_space' in s.series_description or 't2_space' in s.series_description or 't2_spc' in s.series_description or 'T2_spc' in s.series_description.strip() ): 					
+					if ('ND' in (s.image_type[3].strip())):
+						info[spc_T2w].append({'item': s.series_id})
+					if ('DIS2D' in (s.image_type[3].strip())):
+						info[DIS2D_spc_T2w].append({'item': s.series_id})
+					if ('DIS3D' in (s.image_type[3].strip())):
+						info[DIS3D_spc_T2w].append({'item': s.series_id})
+				
+				elif ('t1map' in s.series_description.strip().lower() or 't1_map' in s.series_description.strip().lower() or 't1_images' in s.series_description.strip().lower()):
+					info[t1map].append({'item': s.series_id})
+
+				elif ('mp2rage' in s.series_description.strip().lower() or 'mprage' in s.series_description.strip().lower()) and ('uni_images' in s.series_description.strip().lower()):
+					info[t1w_mprage].append({'item': s.series_id})
+
+			#MRI
+			elif any(substring.upper() in s.study_description.upper() for substring in {'MR'}):
 				postop = False
 				if 'SAR' in s.series_description.upper() or any(x in s.protocol_name.upper() for x in {'SAFE', 'STIMULATOR', 'STIM SAFE', 'POST', 'POST OP','POST-OP'}):
 					if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','STEALTH POST','MPRAGE POST'}):
@@ -264,6 +297,8 @@ def infotodict(seqinfo):
 							info[flair_acq].append({'item': s.series_id, 'acq': orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'SSFSE'}):
 							info[t1w_acq].append({'item': s.series_id, 'acq': 'SSFSE' + orientation})
+			
+			
 			
 			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD','HEAD-STEREO'}) and 'SUMMARY' not in s.series_description.upper():
 				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','0.625 X 0.625','NO ANGLE'}

@@ -4,7 +4,7 @@
 #
 
 #laptop
-bids_dir: /home/greydon/Documents/datasets/single
+bids_dir: /home/greydon/Documents/data/SEEG_rerun
 
 #work computer
 #bids_dir: /media/data/data/clinical
@@ -15,13 +15,13 @@ bids_dir: /home/greydon/Documents/datasets/single
 
 heuristic: resources/heuristics/clinical_imaging_old.py
 dcm_config: resources/dcm_config.json
-remove_temp: False
+remove_temp: True
 
 anonymize: False
 
 # Session determination
 sort_sessions: True
-session_calc:
+ses_calc:
   peri: 0
   dur_multi_event: -30
   override_peri: True

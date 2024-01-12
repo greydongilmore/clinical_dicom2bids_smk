@@ -38,7 +38,9 @@ rule tar2bids:
 		tmp_dir = directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id))
 	#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 	shell:
-		'heudiconv --files {input.tar} -o {params.bids} -f {params.heuristic_file} -c dcm2niix --dcmconfig {params.dcm_config} -b'
+		'heudiconv --files {input.tar} -o {params.bids} -f {params.heuristic_file} -c dcm2niix --dcmconfig {params.dcm_config} -b&&'
+		'rm -vf {output.tmp_dir}/*/*/*ROI[0-9].nii.gz&&'
+		'rm -vf {output.tmp_dir}/*/*/*_heudiconv*[0-9].*'
 
 if config['fastsurfer']['run'] or config['fmriprep']['run']:
 	rule cleanSessions:
@@ -49,12 +51,6 @@ if config['fastsurfer']['run'] or config['fmriprep']['run']:
 			#touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
 			tmp_dir = directory(join(config['out_dir'], 'bids', 'sub-' + subject_id)),
 			t1w_file= bids(root=join(config['out_dir'], 'bids'), subject=subject_id, datatype='anat', session='pre', run='01', suffix='T1w.nii.gz'),
-		params:
-			clinical_events=config['clinical_event_file'],
-			bids_fold = join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id),
-			num_subs = len(subjects),
-			ses_calc = config['session_calc'],
-			sub_group = config['sub_group']
 		#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 		script:
 			"../scripts/post_tar2bids/clean_sessions.py"
@@ -65,17 +61,11 @@ else:
 			tmp_dir=rules.tar2bids.output.tmp_dir,
 		output:
 			tmp_dir = directory(join(config['out_dir'], 'bids', 'sub-' + subject_id)),
-		params:
-			clinical_events=config['clinical_event_file'],
-			bids_fold = join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id),
-			num_subs = len(subjects),
-			ses_calc = config['session_calc'],
-			sub_group = config['sub_group']
 		#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 		script:
 			"../scripts/post_tar2bids/clean_sessions.py"
 
-final_outputs.extend(expand(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id), subject=subjects))
+#final_outputs.extend(expand(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id), subject=subjects))
 final_outputs.extend(expand(join(config['out_dir'], 'bids', 'sub-' + subject_id), subject=subjects))
 
 if config['fastsurfer']['run'] or config['fmriprep']['run']:
