@@ -4,7 +4,7 @@
 #
 
 #laptop
-bids_dir: /home/greydon/Documents/data/SEEG_rerun
+bids_dir: /home/greydon/Documents/datasets/DBS_rerun
 
 #work computer
 #bids_dir: /media/data/data/clinical
