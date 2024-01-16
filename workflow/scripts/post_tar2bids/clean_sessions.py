@@ -247,14 +247,13 @@ for ilabel in sessionDates.session.unique():
 				'run':[],
 			}
 			
-			
-			
 			for ikey in key_dict.keys():
 				key_dict[ikey]=ifile.split(f'{ikey}-')[1].split('_')[0] if f'{ikey}-' in ifile else None
 			
 			key_dict['suffix']=ifile.split('_')[-1].split('.nii')[0]
 			key_dict['prefix']=sub_path
-			
+			key_dict['run']=str(1).zfill(2)
+
 			new_file_novel = make_bids_filename(isub, 'ses-'+ilabel, **key_dict)
 			
 			while os.path.exists(new_file_novel+'.nii.gz'):

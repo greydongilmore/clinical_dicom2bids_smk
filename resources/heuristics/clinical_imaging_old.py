@@ -109,7 +109,7 @@ def infotodict(seqinfo):
 
 	#GRE (Susc3D)
 	swi_gre = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-SWI_run-{item:02d}_GRE')
-	swi_gre_elec = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-ElectrodeSWI_run-{item:02d}_GRE')
+	swi_gre_elec = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-Electrode_run-{item:02d}_GRE')
 	mag_gre = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_part-mag_run-{item:02d}_GRE')
 	phase_gre = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_part-phase_run-{item:02d}_GRE')
 
@@ -180,19 +180,12 @@ def infotodict(seqinfo):
 						postop = True
 					
 				if any(substring.upper() in s.series_description.upper() for substring in {'STEALTH', 'STEALTH BRAVO', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR')):
-					if 'MPGR' in s.series_description.upper():
-						if postop:
-							info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeMPGR'})
-						elif 'AX' in s.series_description.upper():
-							info[t1w_acq].append({'item': s.series_id, 'acq': 'MPGR2D'})
-						else:
-							info[t1w_acq].append({'item': s.series_id, 'acq': 'MPGR3D'})
-					else:
+					if 'MPGR' not in s.series_description.upper():
 						if postop:
 							if 'T2' in s.series_description.upper():
-								info[t2w].append({'item': s.series_id, 'acq': 'Electrode3D'})
+								info[t2w].append({'item': s.series_id, 'acq': 'Electrode'})
 							else:
-								info[t1w_acq].append({'item': s.series_id, 'acq': 'Electrode3D'})
+								info[t1w_acq].append({'item': s.series_id, 'acq': 'Electrode'})
 						else:
 							info[t1w].append({'item': s.series_id})
 						
@@ -201,18 +194,10 @@ def infotodict(seqinfo):
 						info[fmap_acq].append({'item': s.series_id, 'acq': 'Electrode'})
 					elif 'T2' in s.series_description.upper():
 						info[fmap].append({'item': s.series_id})
-						
-				elif 'MPGR' in s.series_description.upper():
-					if postop:
-						info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeMPGR'})
-					elif 'AX' in s.series_description.upper():
-						info[t1w_acq].append({'item': s.series_id, 'acq': 'MPGR2D'})
-					else:
-						info[t1w_acq].append({'item': s.series_id, 'acq': 'MPGR3D'})
 				
 				elif 'RAGE' in s.series_description.upper():
 					if postop:
-						info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeMPRAGE'})
+						info[t1w_acq].append({'item': s.series_id, 'acq': 'Electrode'})
 					elif 'AX' in s.series_description.upper():
 						info[t1w_acq].append({'item': s.series_id, 'acq': 'MPRAGE2D'})
 					else:
@@ -226,27 +211,17 @@ def infotodict(seqinfo):
 					else:
 						info[flair].append({'item': s.series_id})
 
-				elif any(substring.upper() in s.series_description.upper() for substring in {'IR_FSPGR', 'FSPGR','IR-FSPGR'}):
+				elif any(substring.upper() in s.series_description.upper() for substring in {'IR_FSPGR', 'FSPGR','IR-FSPGR','SPGR'}):
 					if postop:
-						info[t1w_acq].append({'item': s.series_id, 'acq': 'ElectrodeFSPGR'})
+						info[t1w_acq].append({'item': s.series_id, 'acq': 'Electrode'})
 					else:
-						info[t1w_acq].append({'item': s.series_id, 'acq': 'FSPGR'})
+						if 'FSPGR' in s.series_description.upper():
+							info[t1w_acq].append({'item': s.series_id, 'acq': 'FSPGR'})
+						else:
+							info[t1w_acq].append({'item': s.series_id, 'acq': 'SPGR'})
 				
 				elif any(substring.upper() in s.series_description.upper() for substring in {'SWI'}):
-					if len(is_swi_derived(s.series_description))>=1:
-						str_derv=is_swi_derived(s.series_description)[0].upper()
-						if str_derv == 'MAG':
-							info[mag_gre].append({'item': s.series_id})
-						elif str_derv == 'PHA':
-							info[phase_gre].append({'item': s.series_id})
-						elif str_derv == 'MIP':
-							if 'AX' in s.series_description.upper():
-								info[mips_tra].append({'item': s.series_id})
-							elif 'COR' in s.series_description.upper():
-								info[mips_cor].append({'item': s.series_id})
-							elif 'SAG' in s.series_description.upper():
-								info[mips_sag].append({'item': s.series_id})
-					else:
+					if len(is_swi_derived(s.series_description))<1:
 						if postop:
 							info[swi_gre_elec].append({'item': s.series_id})
 						else:
@@ -273,13 +248,15 @@ def infotodict(seqinfo):
 						else:
 							info[dwi].append({'item': s.series_id})
 
-				elif any(substring.upper() in s.series_description.upper() for substring in {'AX', 'COR','SAG'}) and ('3D' not in s.series_description.upper()):
-					if ('AX' in s.series_description.upper()):
-						orientation = 'Tra'
-					elif ('COR' in s.series_description.upper()):
-						orientation = 'Cor'
-					elif ('SAG' in s.series_description.upper()):
-						orientation = 'Sag'
+				elif any(substring.upper() in s.series_description.upper() for substring in {'AX', 'COR','SAG'}):
+					orientation=''
+					if '3D' not in s.series_description.upper():
+						if ('AX' in s.series_description.upper()):
+							orientation = 'Tra'
+						elif ('COR' in s.series_description.upper()):
+							orientation = 'Cor'
+						elif ('SAG' in s.series_description.upper()):
+							orientation = 'Sag'
 					
 					if postop:
 						if any(substring.upper() in s.series_description.upper() for substring in {'T2', '2D'}):
@@ -288,6 +265,8 @@ def infotodict(seqinfo):
 							info[t1w_pd].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'FLAIR'}):
 							info[flair_acq].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
+						else:
+							info[t1w_acq].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
 					else:
 						if any(substring.upper() in s.series_description.upper() for substring in {'T2','2D'}):
 							info[t2w].append({'item': s.series_id, 'acq': orientation})
@@ -297,8 +276,8 @@ def infotodict(seqinfo):
 							info[flair_acq].append({'item': s.series_id, 'acq': orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'SSFSE'}):
 							info[t1w_acq].append({'item': s.series_id, 'acq': 'SSFSE' + orientation})
-			
-			
+						else:
+							info[t1w_acq].append({'item': s.series_id})
 			
 			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD','HEAD-STEREO'}) and 'SUMMARY' not in s.series_description.upper():
 				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','0.625 X 0.625','NO ANGLE'}
@@ -309,7 +288,7 @@ def infotodict(seqinfo):
 				
 				if not all(x.upper() in s.series_description.upper() for x in ct_list_exclude):
 					if (any(substring in ' '.join(s.protocol_name.upper().split()) for substring in electrode_list) or any(substring in s.series_description.upper() for substring in electrode_list) or any(substring == s.series_description.upper() for substring in electrode_list_exact))\
-					and not any(x.upper() in ' '.join(s.series_description.upper().split()) for x in frame_list):
+					and not any(x.upper() in ' '.join(s.series_description.upper().split()) for x in frame_list) and not any(x.upper() in ' '.join(s.protocol_name.upper().split()) for x in ['1.25 X 1.25']):
 						if any(x.upper() in s.series_description.upper() for x in ('BONE','SEMAR')):
 							info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Electrode', 'desc':'BONE'})
 						else:
