@@ -148,7 +148,10 @@ print('Converting subject {} ...'.format(os.path.basename(snakemake.input.tmp_di
 subject_event = []
 if os.path.exists(clinical_event_file):
 	event_dates = pd.read_csv(clinical_event_file, sep='\t',dtype = str)
-	subject_event = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in event_dates[event_dates['subject']==sub_num]['event_date'].values] if x is not np.nan]
+	if '_' in event_dates[event_dates['subject']==sub_num]['event_date'].values[0]:
+		subject_event = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in event_dates[event_dates['subject']==sub_num]['event_date'].values] if x is not np.nan]
+	else:
+		subject_event = [datetime.datetime.strptime(x, '%Y-%m-%d') for x in [y for y in event_dates[event_dates['subject']==sub_num]['event_date'].values] if x is not np.nan]
 
 orig_sessions = sorted_nicely([x for x in os.listdir(snakemake.input.tmp_dir) if os.path.isdir(os.path.join(snakemake.input.tmp_dir, x)) and 'ses' in x])
 
