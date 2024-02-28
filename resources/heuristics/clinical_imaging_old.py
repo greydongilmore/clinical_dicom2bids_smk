@@ -279,9 +279,9 @@ def infotodict(seqinfo):
 			
 			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD','HEAD-STEREO'}) and 'SUMMARY' not in s.series_description.upper():
 				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','0.625 X 0.625','NO ANGLE','DEPTH ELECTRODES'}
-				electrode_list_exact={'VOL. 0.5'}
+				electrode_list_exact={'VOL. 0.5','STD STD 0.5'}
 				ct_list_exclude={'AXIAL 2.500'}
-				frame_list = {'STEROTACTIC', 'STEREOTACTIC','STEREOTACTIC FRAME', 'STEALTH', 'CTA_COW','AXIAL 1.200 CE','HEAD-STEREO','1.25 X 1.25',"1.25 X 1.25 AXIAL NO ANGLE"}
+				frame_list = {'STEROTACTIC', 'STEREOTACTIC','STEREOTACTIC FRAME', 'STEALTH', 'CTA_COW','AXIAL 1.200 CE','NC AXIAL 1.200','HEAD-STEREO','1.25 X 1.25',"1.25 X 1.25 AXIAL NO ANGLE"}
 				frame_exclude={}
 				
 				if not all(x.upper() in s.series_description.upper() for x in ct_list_exclude):

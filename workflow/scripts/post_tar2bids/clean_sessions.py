@@ -140,7 +140,7 @@ if not os.path.exists(final_dir):
 	os.mkdir(final_dir)
 
 #os.remove(snakemake.input.touch_tar2bids)
-sub_num=''.join([x for x in os.path.basename(snakemake.input.tmp_dir) if x.isnumeric()])
+sub_num=snakemake.config['subject_prefix']+''.join([x for x in os.path.basename(snakemake.input.tmp_dir) if x.isnumeric()])
 isub = os.path.basename(snakemake.input.tmp_dir)
 
 print('Converting subject {} ...'.format(os.path.basename(snakemake.input.tmp_dir)))

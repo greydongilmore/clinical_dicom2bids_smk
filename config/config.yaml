@@ -10,8 +10,7 @@ bids_dir: /home/greydon/Documents/datasets/SEEG_peds
 #bids_dir: /media/data/data/clinical
 
 #external drive
-#bids_dir: /media/greydon/lhsc_data/single
-
+#bids_dir: /media/greydon/lhsc_data/datasets/DBS
 
 heuristic: resources/heuristics/clinical_imaging_old.py
 dcm_config: resources/dcm_config.json
