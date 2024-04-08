@@ -1,5 +1,5 @@
 def get_dicom_dir(wildcards):
-	subji = wildcards.subject.strip(config['subject_prefix'])
+	subji = wildcards.subject
 	if config['anonymize']:
 		for root, folders, files in walk(join(config['dicom_dir'],'sub-' + subji)):
 			for file in files:
@@ -22,14 +22,13 @@ rule dicom2tar:
 	params:
 		clinical_events=config['clinical_event_file'],
 		log_dir=join(config['out_dir'],'logs'),
-		prefix=config['subject_prefix'],
 	#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 	script:
 		"../scripts/dicom2tar/main.py"
 
 rule tar2bids:
 	input:
-		tar = join(config['out_dir'], 'sourcedata', 'tars', subject_id),
+		tar = join(config['out_dir'], 'sourcedata', 'tars', subject_id)
 	params:
 		heuristic_file = config['heuristic'],
 		bids = directory(join(config['out_dir'], 'bids_tmp')),

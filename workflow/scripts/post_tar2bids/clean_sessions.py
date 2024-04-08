@@ -140,7 +140,7 @@ if not os.path.exists(final_dir):
 	os.mkdir(final_dir)
 
 #os.remove(snakemake.input.touch_tar2bids)
-sub_num=snakemake.config['subject_prefix']+''.join([x for x in os.path.basename(snakemake.input.tmp_dir) if x.isnumeric()])
+sub_num=os.path.basename(snakemake.input.tmp_dir).split('-')[-1]
 isub = os.path.basename(snakemake.input.tmp_dir)
 
 print('Converting subject {} ...'.format(os.path.basename(snakemake.input.tmp_dir)))
@@ -148,10 +148,11 @@ print('Converting subject {} ...'.format(os.path.basename(snakemake.input.tmp_di
 subject_event = []
 if os.path.exists(clinical_event_file):
 	event_dates = pd.read_csv(clinical_event_file, sep='\t',dtype = str)
-	if '_' in event_dates[event_dates['subject']==sub_num]['event_date'].values[0]:
-		subject_event = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in event_dates[event_dates['subject']==sub_num]['event_date'].values] if x is not np.nan]
-	else:
-		subject_event = [datetime.datetime.strptime(x, '%Y-%m-%d') for x in [y for y in event_dates[event_dates['subject']==sub_num]['event_date'].values] if x is not np.nan]
+	if sub_num in event_dates['subject'].values:
+		if '_' in event_dates[event_dates['subject']==sub_num]['event_date'].values[0]:
+			subject_event = [datetime.datetime.strptime(x, '%Y_%m_%d') for x in [y for y in event_dates[event_dates['subject']==sub_num]['event_date'].values] if x is not np.nan]
+		else:
+			subject_event = [datetime.datetime.strptime(x, '%Y-%m-%d') for x in [y for y in event_dates[event_dates['subject']==sub_num]['event_date'].values] if x is not np.nan]
 
 orig_sessions = sorted_nicely([x for x in os.listdir(snakemake.input.tmp_dir) if os.path.isdir(os.path.join(snakemake.input.tmp_dir, x)) and 'ses' in x])
 
@@ -174,7 +175,7 @@ for ises in orig_sessions:
 			sessionDates['session'].append('pre')
 		else:
 			#idate = datetime.datetime.strptime(scans_data['acq_time'].values[0], '%Y-%m-%dT%H:%M:%S')
-			idate = datetime.datetime.strptime(scans_data['acq_time'].values[0].split('T')[0], '%Y-%m-%d')
+			idate = [datetime.datetime.strptime(x.split('T')[0], '%Y-%m-%d') for x in scans_data['acq_time'].values][0]
 			dateAdded = False
 			for ievent in subject_event:
 				if dateAdded:
@@ -182,10 +183,10 @@ for ises in orig_sessions:
 						if abs((idate-ievent).days) <= snakemake.config['ses_calc']['peri']:
 							post_scan=False
 							if snakemake.config['ses_calc']['override_peri']:
-								for root, folders, files in os.walk(os.path.join(snakemake.input.tmp_dir, ises)):
-									for file in files:
-										if 'electrode' in file.lower():
-											post_scan = True
+								files=glob.glob(os.path.join(snakemake.input.tmp_dir, ises,'**','*.nii.gz'),recursive=True)
+								for file in files:
+									if 'frame' not in os.path.basename(file.lower()):
+										post_scan = True
 
 							if post_scan:
 								sessionDates['session'][-1]='post'
@@ -201,10 +202,10 @@ for ises in orig_sessions:
 					elif abs((idate-ievent).days) <= snakemake.config['ses_calc']['peri']:
 						post_scan=False
 						if snakemake.config['ses_calc']['override_peri']:
-							for root, folders, files in os.walk(os.path.join(snakemake.input.tmp_dir, ises)):
-								for file in files:
-									if 'electrode' in file.lower():
-										post_scan = True
+							files=glob.glob(os.path.join(snakemake.input.tmp_dir, ises,'**','*.nii.gz'),recursive=True)
+							for file in files:
+								if 'frame' not in os.path.basename(file.lower()):
+									post_scan = True
 						
 						if post_scan:
 							sessionDates['session'].append('post')

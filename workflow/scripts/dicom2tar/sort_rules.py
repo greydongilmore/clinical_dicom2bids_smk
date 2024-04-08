@@ -253,7 +253,7 @@ def sort_rule_clinical(filename, args):
                 
             # This will skip any order sheets
             if dataset.Modality in {'SR', 'PR', 'KO'}:
-                errorInfoTemp = "\t".join([args.prefix + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], study_date,
+                errorInfoTemp = "\t".join([[s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], study_date,
                                            clean_path('{series:04d}'.format(series=dataset.SeriesNumber)), dataset.Modality])
                 write_error_file(error_file, errorInfoTemp)
                 return None
@@ -305,13 +305,12 @@ def sort_rule_clinical(filename, args):
                                 return None
                                 
                         elif all(['CR' in dataset.Modality, any(x in dataset.StudyDescription for x in {'Skull Routine Portable', 'Intraoperative Portable'})]):
-                            errorInfoTemp = "\t".join([args.prefix + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], study_date,
+                            errorInfoTemp = "\t".join([[s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], study_date,
                                                        clean_path('{series:04d}'.format(series=dataset.SeriesNumber)), dataset.StudyDescription])
                             write_error_file(error_file, errorInfoTemp)
                             return None
                         else:
-                            patient = args.prefix + \
-                                [s for s in filename.split(os.sep) if 'sub' in s][0].split(
+                            patient = [s for s in filename.split(os.sep) if 'sub' in s][0].split(
                                     '-')[1] + '_' + study_date
                             series_number = clean_path(
                                 '{series:04d}'.format(series=dataset.SeriesNumber))
@@ -331,8 +330,7 @@ def sort_rule_clinical(filename, args):
                     else:
                         if all(x not in dataset.SeriesDescription.lower() for x in {'loc', 'dose report', 'summary'}):
                             
-                            patient = args.prefix + \
-                                [s for s in filename.split(os.sep) if 'sub' in s][0].split(
+                            patient = [s for s in filename.split(os.sep) if 'sub' in s][0].split(
                                     '-')[1] + '_' + study_date
                             series_number = clean_path(
                                 '{series:04d}'.format(series=dataset.SeriesNumber))
@@ -350,7 +348,7 @@ def sort_rule_clinical(filename, args):
                                 unique=hashcode(dataset.SOPInstanceUID),
                             )
                 except Exception as e:
-                    errorInfoTemp = "\t".join([args.prefix + [s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], study_date,
+                    errorInfoTemp = "\t".join([[s for s in filename.split(os.sep) if 'sub' in s][0].split('-')[1], study_date,
                                                clean_path('{series:04d}'.format(series=dataset.SeriesNumber)), 'csaReader'])
                     write_error_file(error_file, errorInfoTemp)
                     return None

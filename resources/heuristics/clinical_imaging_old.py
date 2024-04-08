@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import regex as re
 
 diff_dic={
@@ -173,13 +172,13 @@ def infotodict(seqinfo):
 					info[t1w_mprage].append({'item': s.series_id})
 
 			#MRI
-			elif any(substring.upper() in s.study_description.upper() for substring in {'MR'}) and '_MPR_' not in s.series_description.upper():
+			elif any(substring.upper() in s.study_description.upper() for substring in {'MR'}) and ('_MPR_' not in s.series_description.upper()) and not all(sub_str in list(s.image_type) for sub_str in ("ORIGINAL","PRIMARY","M","ND")):
 				postop = False
-				if 'SAR' in s.series_description.upper() or any(x in s.protocol_name.upper() for x in {'SAFE', 'STIMULATOR', 'STIM SAFE', 'POST', 'POST OP','POST-OP','DEPTH ELECTRODES'}):
+				if 'SAR' in s.series_description.upper() or any(x in s.protocol_name.upper() for x in {'SAFE', 'STIMULATOR', 'STIM SAFE', 'POST OP','POST-OP','DEPTH ELECTRODES'}):
 					if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','STEALTH POST','MPRAGE POST'}):
 						postop = True
 					
-				if any(substring.upper() in s.series_description.upper() for substring in {'STEALTH', 'STEALTH BRAVO', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR')):
+				if any(substring.upper() in s.series_description.upper() for substring in {'STEALTH', 'STEALTH BRAVO','T1W_MPR_', 'AX T1 3D', 'AX 3D T1', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR')):
 					if 'MPGR' not in s.series_description.upper():
 						if postop:
 							if 'T2' in s.series_description.upper():
@@ -220,6 +219,14 @@ def infotodict(seqinfo):
 						else:
 							info[t1w_acq].append({'item': s.series_id, 'acq': 'SPGR'})
 				
+				elif ('SPC_T2' in s.series_description.upper() or 'T2W_SPC' in s.series_description.upper() or 'T2_SPC' in s.series_description.upper()): 					
+					if any(substring.upper() in (s.image_type[2].strip()) for substring in {'ND', 'MPR'}):
+						info[spc_T2w].append({'item': s.series_id})
+					if ('DIS2D' in (s.image_type[2].strip())):
+						info[DIS2D_spc_T2w].append({'item': s.series_id})
+					if ('DIS3D' in (s.image_type[2].strip())):
+						info[DIS3D_spc_T2w].append({'item': s.series_id})
+
 				elif any(substring.upper() in s.series_description.upper() for substring in {'SWI'}):
 					if len(is_swi_derived(s.series_description))<1:
 						if postop:
@@ -277,13 +284,13 @@ def infotodict(seqinfo):
 						elif any(substring.upper() in s.series_description.upper() for substring in {'SSFSE'}):
 							info[t1w_acq].append({'item': s.series_id, 'acq': 'SSFSE' + orientation})
 			
-			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD','HEAD-STEREO'}) and 'SUMMARY' not in s.series_description.upper():
+			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD-STEREO'}) and ('SUMMARY' not in s.series_description.upper()) and not all(sub_str in list(s.image_type) for sub_str in ("DERIVED","PRIMARY","MPR")):
 				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','0.625 X 0.625','NO ANGLE','DEPTH ELECTRODES'}
-				electrode_list_exact={'VOL. 0.5','STD STD 0.5'}
+				electrode_list_exact={'VOL. 0.5','STD STD 0.5','NON CE VOL PEDIATRIC BRAIN 26 0.5'}
 				ct_list_exclude={'AXIAL 2.500'}
-				frame_list = {'STEROTACTIC', 'STEREOTACTIC','STEREOTACTIC FRAME', 'STEALTH', 'CTA_COW','AXIAL 1.200 CE','NC AXIAL 1.200','HEAD-STEREO','1.25 X 1.25',"1.25 X 1.25 AXIAL NO ANGLE"}
+				frame_list = {'STEROTACTIC', 'STEREOTACTIC','STEREOTACTIC FRAME', 'CTA_COW','AXIAL 1.200 CE','NC AXIAL 1.200','HEAD-STEREO','1.25 X 1.25',"1.25 X 1.25 AXIAL NO ANGLE"}
 				frame_exclude={}
-				
+
 				if not all(x.upper() in s.series_description.upper() for x in ct_list_exclude):
 					if (any(substring in ' '.join(s.protocol_name.upper().split()) for substring in electrode_list) or any(substring in s.series_description.upper() for substring in electrode_list) or any(substring == s.series_description.upper() for substring in electrode_list_exact))\
 					and not any(x.upper() in ' '.join(s.series_description.upper().split()) for x in frame_list) and not any(x.upper() in ' '.join(s.protocol_name.upper().split()) for x in ['1.25 X 1.25']):
@@ -297,10 +304,15 @@ def infotodict(seqinfo):
 							info[ct_acq_desc].append({'item': s.series_id, 'acq': 'Frame', 'desc':'BONE'})
 						else:
 							info[ct_acq].append({'item': s.series_id, 'acq': 'Frame'})
+					elif any(x.upper() in s.series_description.upper() for x in ('BONE','SEMAR')):
+						info[ct_acq].append({'item': s.series_id, 'acq': 'BONE'})
+					else:
+						info[ct].append({'item': s.series_id})
 
 			elif any(substring.upper() in s.study_description.upper() for substring in {'PET'}) or any(substring.upper() in s.series_description.upper() for substring in {'PET CORR'}):
-				if any(substring.upper() in s.series_description.upper() for substring in {'ITERATIVE','RECON','FBP','PET CORR','AC BRAIN DYN'}):
+				if any(substring.upper() in s.series_description.upper() for substring in {'ITERATIVE','RECON','PET CORR','AC BRAIN DYN'}):
 					if '3D_FBP' not in s.series_description.upper():
 						info[pet].append({'item': s.series_id})
-					
+			elif any(substring.upper() in s.series_description.upper() for substring in {'MAC'}):
+				info[pet_acq].append({'item': s.series_id, 'acq': 'MAC'})
 	return info
