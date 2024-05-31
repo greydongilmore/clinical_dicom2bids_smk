@@ -3,14 +3,14 @@
 #--- dicom2bids
 #
 
-bids_dir: /home/greydon/Documents/data/single
+bids_dir: /home/greydon/Documents/data/DBS
 #bids_dir: /home/greydon/Documents/data/SEEG_rerun
 
 #work computer
 #bids_dir: /media/data/data/clinical
 
 #external drive
-#bids_dir: /media/greydon/lhsc_data/datasets/DBS
+#bids_dir: /media/greydon/lhsc_data/datasets/SEEG
 
 heuristic: resources/heuristics/clinical_imaging_old.py
 dcm_config: resources/dcm_config.json
