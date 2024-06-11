@@ -175,7 +175,7 @@ for ises in orig_sessions:
 			sessionDates['session'].append('pre')
 		else:
 			#idate = datetime.datetime.strptime(scans_data['acq_time'].values[0], '%Y-%m-%dT%H:%M:%S')
-			idate = [datetime.datetime.strptime(x.split('T')[0], '%Y-%m-%d') for x in scans_data['acq_time'].values][0]
+			idate = [datetime.datetime.strptime(x.split('T')[0], '%Y-%m-%d') for x in scans_data['acq_time'].values if not pd.isnull(x)][0]
 			dateAdded = False
 			for ievent in subject_event:
 				if dateAdded:
