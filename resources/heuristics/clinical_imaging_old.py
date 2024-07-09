@@ -178,7 +178,7 @@ def infotodict(seqinfo):
 					if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','STEALTH POST','MPRAGE POST'}):
 						postop = True
 					
-				if any(substring.upper() in s.series_description.upper() for substring in {'STEALTH', 'STEALTH BRAVO','T1W_MPR_', 'AX T1 3D', 'AX 3D T1', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR')):
+				if any(substring.upper() in s.series_description.upper() for substring in {'STEALTH', 'BRAVO','T1W_MPR_', 'AX T1 3D', 'AX 3D T1', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR')):
 					if 'MPGR' not in s.series_description.upper():
 						if postop:
 							if 'T2' in s.series_description.upper():
@@ -257,13 +257,12 @@ def infotodict(seqinfo):
 
 				elif any(substring.upper() in s.series_description.upper() for substring in {'AX', 'COR','SAG'}):
 					orientation=''
-					if '3D' not in s.series_description.upper():
-						if ('AX' in s.series_description.upper()):
-							orientation = 'Tra'
-						elif ('COR' in s.series_description.upper()):
-							orientation = 'Cor'
-						elif ('SAG' in s.series_description.upper()):
-							orientation = 'Sag'
+					if ('AX' in s.series_description.upper()):
+						orientation = 'Tra'
+					elif ('COR' in s.series_description.upper()):
+						orientation = 'Cor'
+					elif ('SAG' in s.series_description.upper()):
+						orientation = 'Sag'
 					
 					if postop:
 						if any(substring.upper() in s.series_description.upper() for substring in {'T2', '2D'}):
