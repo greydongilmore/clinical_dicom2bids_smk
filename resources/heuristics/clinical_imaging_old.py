@@ -283,7 +283,7 @@ def infotodict(seqinfo):
 						elif any(substring.upper() in s.series_description.upper() for substring in {'SSFSE'}):
 							info[t1w_acq].append({'item': s.series_id, 'acq': 'SSFSE' + orientation})
 			
-			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD-STEREO','HEAD'}) and ('SUMMARY' not in s.series_description.upper()) and not all(sub_str in list(s.image_type) for sub_str in ("DERIVED","PRIMARY","MPR")):
+			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD-STEREO'}) and ('SUMMARY' not in s.series_description.upper()) and not all(sub_str in list(s.image_type) for sub_str in ("DERIVED","PRIMARY","MPR")):
 				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','0.625 X 0.625','NO ANGLE','DEPTH ELECTRODES'}
 				electrode_list_exact={'VOL. 0.5','Vol. 0.5','STD STD 0.5','NON CE VOL PEDIATRIC BRAIN 26 0.5'}
 				ct_list_exclude={'AXIAL 2.500'}
@@ -308,7 +308,7 @@ def infotodict(seqinfo):
 						info[ct].append({'item': s.series_id})
 
 			elif any(substring.upper() in s.study_description.upper() for substring in {'PET'}) or any(substring.upper() in s.series_description.upper() for substring in {'PET CORR'}):
-				if any(substring.upper() in s.series_description.upper() for substring in {'ITERATIVE','RECON','PET CORR','AC BRAIN DYN'}):
+				if any(substring.upper() in s.series_description.upper() for substring in {'ITERATIVE','RECON','PET CORR','AC BRAIN DYN','Coronals'}):
 					if '3D_FBP' not in s.series_description.upper():
 						info[pet].append({'item': s.series_id})
 			elif any(substring.upper() in s.series_description.upper() for substring in {'MAC'}):

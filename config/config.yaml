@@ -3,7 +3,7 @@
 #--- dicom2bids
 #
 
-bids_dir: /home/greydon/Documents/data/SEEG_peds
+bids_dir: /home/greydon/Documents/data/DBS
 #bids_dir: /home/greydon/Documents/data/SEEG_rerun
 
 #work computer
