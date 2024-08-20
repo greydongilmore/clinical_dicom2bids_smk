@@ -594,7 +594,7 @@ def infotodict(seqinfo):
                     info[DIS3D_spc_T2w].append({'item': s.series_id})
     
         #spc T2w  
-        if ('spc_flair' in s.series_description or 'dark-fluid' in s.series_description or 'flair_spc' in s.series_description or 'flair_spcir' in s.series_description): 
+        if ('spc_flair' in s.series_description or 'dark-fluid' in s.series_description): 
             if ('ND' in (s.image_type[3].strip())):
                 info[spc_FLAIR].append({'item': s.series_id})
             if ('DIS2D' in (s.image_type[3].strip())):
