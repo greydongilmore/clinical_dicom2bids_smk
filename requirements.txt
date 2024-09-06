@@ -8,5 +8,4 @@ regex>=2023.3.23
 scikit-image>=0.19.2
 setuptools>=39.2.0
 snakemake>=5.23.0
-
 heudiconv==0.12.2

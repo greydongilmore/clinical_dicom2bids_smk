@@ -28,16 +28,18 @@ rule dicom2tar:
 
 rule tar2bids:
 	input:
-		tar = join(config['out_dir'], 'sourcedata', 'tars', subject_id)
+		tar = expand(join(config['out_dir'], 'sourcedata', 'tars', subject_id), subject=subjects)
 	params:
 		heuristic_file = config['heuristic'],
 		bids = directory(join(config['out_dir'], 'bids_tmp')),
-		dcm_config=config['dcm_config']
+		dcm_config=config['dcm_config'],
+		subji=basename(rules.dicom2tar.output.tar),
 	output:
-		tmp_dir = directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id))
+		tmp_dir = directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id)),
+		out_dir=directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id,'ses-001'))
 	#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 	shell:
-		'heudiconv --files {input.tar} -o {params.bids} -f {params.heuristic_file} -c dcm2niix --dcmconfig {params.dcm_config} -b&&'
+		'heudiconv --files {input.tar}/*.tar -o {params.bids} -s {params.subji} -f {params.heuristic_file} -c dcm2niix -b --dcmconfig {params.dcm_config}&&'
 		'rm -vf {output.tmp_dir}/*/*/*ROI[0-9].nii.gz&&'
 		'rm -vf {output.tmp_dir}/*/*/*_heudiconv*[0-9].*'
 
@@ -46,6 +48,7 @@ if config['fastsurfer']['run'] or config['fmriprep']['run']:
 		input:
 			#touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
 			tmp_dir=rules.tar2bids.output.tmp_dir,
+			out_dir=join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id,'ses-001')
 		output:
 			#touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
 			tmp_dir = directory(join(config['out_dir'], 'bids', 'sub-' + subject_id)),
