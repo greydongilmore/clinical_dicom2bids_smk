@@ -226,7 +226,7 @@ for ilabel in sessionDates.session.unique():
 		sub_code_path = make_bids_folders(isub.split('-')[1], ilabel, 'info', os.path.join(final_dir,'.heudiconv'), True, False)
 		scans_tsv = [x for x in os.listdir(os.path.join(snakemake.input.tmp_dir, ises)) if x.endswith('scans.tsv')]
 		scans_data = pd.read_csv(os.path.join(snakemake.input.tmp_dir, ises, scans_tsv[0]),sep='\t',parse_dates=True,date_format='%Y-%m-%dT%H:%M:%S')
-		scans_data['acq_time']=[pd.Timestamp(d).round(freq='S') for d in scans_data['acq_time']]
+		scans_data['acq_time']=[pd.Timestamp(d).round(freq='s') for d in scans_data['acq_time']]
 	
 		for ifile in scans_data['filename']:
 			

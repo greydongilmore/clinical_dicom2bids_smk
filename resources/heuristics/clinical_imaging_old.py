@@ -178,7 +178,7 @@ def infotodict(seqinfo):
 					if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','STEALTH POST','MPRAGE POST'}):
 						postop = True
 					
-				if any(substring.upper() in s.series_description.upper() for substring in {'STEALTH', 'BRAVO','T1W_MPR_', 'AX T1 3D', 'AX 3D T1', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR')):
+				if any(substring.upper() in s.series_description.upper() for substring in {'AXT1 WAND','STEALTH', 'BRAVO','T1W_MPR_', 'AX T1 3D', 'AX 3D T1', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR')):
 					if 'MPGR' not in s.series_description.upper():
 						if postop:
 							if 'T2' in s.series_description.upper():
@@ -265,26 +265,26 @@ def infotodict(seqinfo):
 						orientation = 'Sag'
 					
 					if postop:
-						if any(substring.upper() in s.series_description.upper() for substring in {'T2', '2D'}):
-							info[t2w].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
-						elif any(substring.upper() in s.series_description.upper() for substring in {'PD'}):
+						if any(substring.upper() in s.series_description.upper() for substring in {'PD'}):
 							info[t1w_pd].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
+						elif any(substring.upper() in s.series_description.upper() for substring in {'T2', '2D'}):
+							info[t2w].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'FLAIR'}):
 							info[flair_acq].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
 						else:
 							info[t1w_acq].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
 					else:
-						if any(substring.upper() in s.series_description.upper() for substring in {'T2','2D'}):
-							info[t2w].append({'item': s.series_id, 'acq': orientation})
-						elif any(substring.upper() in s.series_description.upper() for substring in {'PD'}):
+						if any(substring.upper() in s.series_description.upper() for substring in {'PD'}):
 							info[t1w_pd].append({'item': s.series_id, 'acq': orientation})
+						elif any(substring.upper() in s.series_description.upper() for substring in {'T2','2D'}):
+							info[t2w].append({'item': s.series_id, 'acq': orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'FLAIR'}):
 							info[flair_acq].append({'item': s.series_id, 'acq': orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'SSFSE'}):
 							info[t1w_acq].append({'item': s.series_id, 'acq': 'SSFSE' + orientation})
 			
 			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD-STEREO'}) and ('SUMMARY' not in s.series_description.upper()):
-				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','0.625 X 0.625','NO ANGLE','DEPTH ELECTRODES'}
+				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','0.625 X 0.625','NO ANGLE','DEPTH ELECTRODES','DEEP BRAIN STIMULATION STEALTH'}
 				electrode_list_exact={'VOL. 0.5','Vol. 0.5','STD STD 0.5','NON CE VOL PEDIATRIC BRAIN 26 0.5'}
 				ct_list_exclude={'AXIAL 2.500'}
 				frame_list = {'STEROTACTIC', 'STEREOTACTIC','STEREOTACTIC FRAME', 'CTA_COW','AXIAL 1.200','NC AXIAL 1.200','HEAD-STEREO','1.25 X 1.25',"1.25 X 1.25 AXIAL NO ANGLE","HEAD  STEALTH"}
