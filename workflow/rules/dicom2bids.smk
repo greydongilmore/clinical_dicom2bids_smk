@@ -36,7 +36,7 @@ rule tar2bids:
 		subji=basename(rules.dicom2tar.output.tar),
 	output:
 		tmp_dir = directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id)),
-		out_dir=directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id,'ses-001'))
+		#out_dir=directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id,'ses-001'))
 	#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 	shell:
 		'heudiconv --files {input.tar}/*.tar -o {params.bids} -s {params.subji} -f {params.heuristic_file} -c dcm2niix -b --dcmconfig {params.dcm_config}&&'
