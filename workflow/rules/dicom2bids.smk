@@ -28,7 +28,7 @@ rule dicom2tar:
 
 rule tar2bids:
 	input:
-		tar = expand(join(config['out_dir'], 'sourcedata', 'tars', subject_id), subject=subjects)
+		tar = join(config['out_dir'], 'sourcedata', 'tars', subject_id)
 	params:
 		heuristic_file = config['heuristic'],
 		bids = directory(join(config['out_dir'], 'bids_tmp')),
@@ -36,6 +36,7 @@ rule tar2bids:
 		subji=basename(rules.dicom2tar.output.tar),
 	output:
 		tmp_dir = directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id)),
+		#touch_tar2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done")),
 		#out_dir=directory(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id,'ses-001'))
 	#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 	shell:
@@ -46,7 +47,7 @@ rule tar2bids:
 if config['fastsurfer']['run'] or config['fmriprep']['run']:
 	rule cleanSessions:
 		input:
-			#touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
+			touch_tar2bids=join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"),
 			tmp_dir=rules.tar2bids.output.tmp_dir,
 			out_dir=join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id,'ses-001')
 		output:
@@ -63,11 +64,15 @@ else:
 			tmp_dir=rules.tar2bids.output.tmp_dir,
 		output:
 			tmp_dir = directory(join(config['out_dir'], 'bids', 'sub-' + subject_id)),
+			#touch_dicom2bids=touch(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done")),
 		#container: 'docker://greydongilmore/dicom2bids-clinical:latest'
 		script:
 			"../scripts/post_tar2bids/clean_sessions.py"
 
 #final_outputs.extend(expand(join(config['out_dir'], 'bids_tmp', 'sub-' + subject_id), subject=subjects))
+#final_outputs.extend(expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_tar2bids.done"), subject=subjects))
+#final_outputs.extend(expand(join(config['out_dir'], 'logs', 'sub-' + subject_id + "_cleanSessions.done"), subject=subjects))
+
 final_outputs.extend(expand(join(config['out_dir'], 'bids', 'sub-' + subject_id), subject=subjects))
 
 if config['fastsurfer']['run'] or config['fmriprep']['run']:

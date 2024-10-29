@@ -283,7 +283,7 @@ def infotodict(seqinfo):
 						elif any(substring.upper() in s.series_description.upper() for substring in {'SSFSE'}):
 							info[t1w_acq].append({'item': s.series_id, 'acq': 'SSFSE' + orientation})
 			
-			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD-STEREO'}) and ('SUMMARY' not in s.series_description.upper()):
+			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD-STEREO','HEAD'}) and ('SUMMARY' not in s.series_description.upper()):
 				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','0.625 X 0.625','NO ANGLE','DEPTH ELECTRODES','DEEP BRAIN STIMULATION STEALTH'}
 				electrode_list_exact={'VOL. 0.5','Vol. 0.5','STD STD 0.5','NON CE VOL PEDIATRIC BRAIN 26 0.5'}
 				ct_list_exclude={'AXIAL 2.500'}
