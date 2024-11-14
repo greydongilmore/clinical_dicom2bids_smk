@@ -4,7 +4,7 @@
 #
 
 #bids_dir: /home/greydon/Documents/data/single
-bids_dir: /home/greydon/Documents/data/single
+bids_dir: /home/greydon/Documents/data/emory
 
 #work computer
 #bids_dir: /media/data/data/clinical
@@ -27,7 +27,7 @@ ses_calc:
 
 # subject level settings
 sub_group: patient
-subject_prefix: 'P'
+subject_prefix: ''
 
 noncontrast_t1:
   present: False
