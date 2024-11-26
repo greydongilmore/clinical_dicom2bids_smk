@@ -82,6 +82,8 @@ def infotodict(seqinfo):
 	t1w_pd = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_PD')
 	flair = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_run-{item:02d}_FLAIR')
 	flair_acq = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_FLAIR')
+	fgatir = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_run-{item:02d}_FGATIR')
+	fgatir_acq = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_FGATIR')
 	
 	#fmap
 	fmap = create_key('{bids_subject_session_dir}/fmap/{bids_subject_session_prefix}_run-{item:02d}_epi')
@@ -149,6 +151,8 @@ def infotodict(seqinfo):
 			DIS3D_spc_T2w:[],
 			t1w_mprage:[],
 			t1map:[],
+			fgatir:[],
+			fgatir_acq:[]
 	}
 	
 	for idx, s in enumerate(seqinfo):
@@ -178,7 +182,7 @@ def infotodict(seqinfo):
 					if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','C+','STEALTH POST','MPRAGE POST'}):
 						postop = True
 					
-				if any(substring.upper() in s.series_description.upper() for substring in {'AXT1 WAND','STEALTH', 'BRAVO','T1W_MPR_', 'AX T1 3D', 'AX 3D T1', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR')):
+				if any(substring.upper() in s.series_description.upper() for substring in {'AXT1 WAND','STEALTH', 'BRAVO','T1W_MPR_', 'AX T1 3D', 'AX 3D T1', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE','MP-RAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR')):
 					if 'MPGR' not in s.series_description.upper():
 						if postop:
 							if 'T2' in s.series_description.upper():
@@ -193,6 +197,14 @@ def infotodict(seqinfo):
 						info[fmap_acq].append({'item': s.series_id, 'acq': 'Electrode'})
 					elif 'T2' in s.series_description.upper():
 						info[fmap].append({'item': s.series_id})
+
+				elif 'FGATIR' in s.series_description.upper():
+					if postop:
+						info[fgatir_acq].append({'item': s.series_id, 'acq': 'Electrode'})
+					elif 'AX' in s.series_description.upper():
+						info[fgatir].append({'item': s.series_id})
+					else:
+						info[fgatir].append({'item': s.series_id})
 				
 				elif 'RAGE' in s.series_description.upper():
 					if postop:
