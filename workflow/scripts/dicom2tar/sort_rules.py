@@ -328,7 +328,7 @@ def sort_rule_clinical(filename, args):
                                 unique=hashcode(dataset.SOPInstanceUID),
                             )
                     else:
-                        if all(x not in dataset.SeriesDescription.lower() for x in {'loc', 'dose report', 'summary'}):
+                        if all(x not in dataset.SeriesDescription.lower() for x in {'loc', 'dose report', 'dose record','summary'}):
                             
                             patient = [s for s in filename.split(os.sep) if 'sub' in s][0].split(
                                     '-')[1] + '_' + study_date

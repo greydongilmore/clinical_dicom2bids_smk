@@ -10,7 +10,7 @@ bids_dir: /home/greydon/Documents/data/emory
 #bids_dir: /media/data/data/clinical
 
 #external drive
-#bids_dir: /media/greydon/lhsc_data/datasets/moncton
+#bids_dir: /media/greydon/lhsc_data/datasets/emory_dbs
 
 heuristic: resources/heuristics/clinical_imaging_old.py
 dcm_config: resources/dcm_config.json
