@@ -79,6 +79,8 @@ def infotodict(seqinfo):
 	#Anat
 	t1w = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_run-{item:02d}_T1w')
 	t1w_acq = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_T1w')
+	ir = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_run-{item:02d}_IRT1w')
+	ir_acq = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_IRT1w')
 	t2w = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_T2w')
 	t1w_pd = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_PD')
 	flair = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_run-{item:02d}_FLAIR')
@@ -129,6 +131,8 @@ def infotodict(seqinfo):
 			t1w_acq:[],
 			t2w:[],
 			t1w_pd:[],
+			ir: [],
+			ir_acq: [],
 			flair:[],
 			flair_acq:[],
 			fmap:[],
@@ -186,7 +190,7 @@ def infotodict(seqinfo):
 					if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','C+','STEALTH POST','MPRAGE POST'}):
 						postop = True
 					
-				if any(substring.upper() in s.series_description.upper() for substring in {'AXT1 WAND','STEALTH', 'BRAVO','T1W_MPR_', 'AX T1 3D', 'AX 3D T1', 'T1 GRE3D', 'T1 SAG 3D', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE','MP-RAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR',"IR")):
+				if any(substring.upper() in s.series_description.upper() for substring in {'AXT1 WAND','STEALTH', 'BRAVO','T1W_MPR_', 'FL3D_AXIAL','AX T1 3D', 'AX 3D T1', 'T1 GRE3D', 'T1 SAG 3D', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE','MP-RAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR',"IR")):
 					if not any(x.upper() in s.series_description.upper() for x in ("MPR_COR","MPR_SAG","_MPR_","MPGR","MPR COR","MPR SAG")):
 						if postop:
 							if 'T2' in s.series_description.upper():
@@ -222,6 +226,12 @@ def infotodict(seqinfo):
 						info[flair_acq].append({'item': s.series_id, 'acq': '2D'})
 					else:
 						info[flair].append({'item': s.series_id})
+				
+				elif 'T1 IR' in s.series_description.upper():
+					if postop:
+						info[ir_acq].append({'item': s.series_id, 'acq': 'Electrode'})
+					else:
+						info[ir].append({'item': s.series_id})
 
 				elif any(substring.upper() in s.series_description.upper() for substring in {'3D IR', 'FSPGR','IR-FSPGR','SPGR'}) and not any(x.upper() in s.protocol_name.upper() for x in {' DIR '}):
 					if postop:
@@ -295,6 +305,7 @@ def infotodict(seqinfo):
 							info[flair_acq].append({'item': s.series_id, 'acq': orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'SSFSE'}):
 							info[t1w_acq].append({'item': s.series_id, 'acq': 'SSFSE' + orientation})
+
 			
 			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD-STEREO','HEAD','FL '}) and ('SUMMARY' not in s.series_description.upper()) and ('MR' not in s.study_description.upper()) and ('PET' not in s.study_description.upper())\
 				and not all(sub_str in [x.strip() for x in list(s.image_type)] for sub_str in ("DERIVED","SECONDARY","REFORMATTED")):
