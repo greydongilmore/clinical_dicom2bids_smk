@@ -183,7 +183,7 @@ def infotodict(seqinfo):
 					info[t1w_mprage].append({'item': s.series_id})
 
 			#MRI
-			elif any(substring.upper() in s.study_description.upper() for substring in {'MR'}) and not all(sub_str in [x.strip() for x in list(s.image_type)] for sub_str in ("ORIGINAL","PROJECTION IMAGE","PRIMARY","M","ND",'MPR'))\
+			elif any(substring.upper() in s.study_description.upper() for substring in {'MR','CLEARPOINT'}) and not all(sub_str in [x.strip() for x in list(s.image_type)] for sub_str in ("ORIGINAL","PROJECTION IMAGE","PRIMARY","M","ND",'MPR'))\
 			and not any(x.upper() in s.series_description.upper() for x in ("_MPR_","'MPGR'")):
 				postop = False
 				if 'SAR' in s.series_description.upper() or any(x in s.protocol_name.upper() for x in {'SAFE', 'STIMULATOR', 'STIM SAFE', 'POST OP','POST-OP','DEPTH ELECTRODES'}):
