@@ -104,7 +104,7 @@ def infotodict(seqinfo):
 	
 	#pet
 	pet = create_key('{bids_subject_session_dir}/pet/{bids_subject_session_prefix}_task-rest_run-{item:02d}_pet')
-	pet_acq = create_key('{bids_subject_session_dir}/pet/{bids_subject_session_prefix}_task-rest_acq-{acq}_run-{item:02d}_pet')
+	pet_acq = create_key('{bids_subject_session_dir}/pet/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_pet')
 	pet_task = create_key('{bids_subject_session_dir}/pet/{bids_subject_session_prefix}_task-{task}_acq-{acq}_run-{item:02d}_pet')
 
 	#MIPS
@@ -190,7 +190,7 @@ def infotodict(seqinfo):
 					if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','C+','STEALTH POST','MPRAGE POST'}):
 						postop = True
 					
-				if any(substring.upper() in s.series_description.upper() for substring in {'AXT1 WAND','STEALTH', 'BRAVO','T1W_MPR_', 'FL3D_AXIAL','AX T1 3D', 'AX 3D T1', 'T1 GRE3D', 'T1 SAG 3D', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE','MP-RAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR',"IR")):
+				if any(substring.upper() in s.series_description.upper() for substring in {'AXT1 WAND','STEALTH', 'BRAVO','T1W_MPR_', 'FL3D_AXIAL','AX T1 3D', 'AX 3D T1', 'SAG 3D T1','T1 GRE3D', 'T1 SAG 3D', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE','MP-RAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR',"IR")):
 					if not any(x.upper() in s.series_description.upper() for x in ("MPR_COR","MPR_SAG","_MPR_","MPGR","MPR COR","MPR SAG")):
 						if postop:
 							if 'T2' in s.series_description.upper():
@@ -336,8 +336,12 @@ def infotodict(seqinfo):
 						info[ct].append({'item': s.series_id})
 
 			elif any(substring.upper() in s.study_description.upper() for substring in {'PET'}) or any(substring.upper() in s.series_description for substring in {'PET CORR'}):
-				if any(substring.upper() in s.series_description for substring in {'ITERATIVE','RECON','PET CORR',' AC BRAIN','Coronals'}):
-					if '3D_FBP' not in s.series_description.upper() and 'DYNAMIC' not in s.series_description.upper():
+				if any(substring.upper() in s.series_description for substring in {'ITERATIVE','RECON','PET CORR','PET NAC','PET AC','Coronals'}):
+					if 'PET NAC' in s.series_description.upper():
+						info[pet_acq].append({'item': s.series_id, 'acq': 'nac'})
+					elif 'PET AC' in s.series_description.upper():
+						info[pet_acq].append({'item': s.series_id, 'acq': 'ac'})
+					elif '3D_FBP' not in s.series_description.upper() and 'DYNAMIC' not in s.series_description.upper():
 						info[pet].append({'item': s.series_id})
 			elif any(substring.upper() in s.series_description for substring in {'MAC'}):
 				info[pet_acq].append({'item': s.series_id, 'acq': 'MAC'})
