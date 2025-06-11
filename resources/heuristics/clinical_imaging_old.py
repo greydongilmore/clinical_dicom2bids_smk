@@ -10,6 +10,30 @@ diff_dic={
 	'TENSOR_B0':'TENSOR',
 }
 
+t1w_series_emory={
+	'AXT1 WAND','STEALTH',
+	'BRAVO','T1W_MPR_',
+	'FL3D_AXIAL',
+	'AX T1 3D',
+	'AX 3D T1',
+	'SAG 3D T1',
+	'T1 GRE3D',
+	'T1 SAG 3D',
+	'AX STEALTH BRAVO',
+	'STEREO',
+	'STEREO-INCLUDE',
+	'1.5 MM ANATOMY',
+	'MPRAGE','MP-RAGE',
+	'T1_3D_AX'
+}
+
+electrode_list_exact={
+	'VOL. 0.5',
+	'Vol. 0.5',
+	'STD STD 0.5',
+	'NON CE VOL PEDIATRIC BRAIN 26 0.5'
+}
+
 def create_key(template, outtype=('nii.gz'), annotation_classes=None):
 	if template is None or not template:
 		raise ValueError('Template must be a valid format string')
@@ -184,13 +208,13 @@ def infotodict(seqinfo):
 
 			#MRI
 			elif any(substring.upper() in s.study_description.upper() for substring in {'MR','CLEARPOINT'}) and not all(sub_str in [x.strip() for x in list(s.image_type)] for sub_str in ("ORIGINAL","PROJECTION IMAGE","PRIMARY","M","ND",'MPR'))\
-			and not any(x.upper() in s.series_description.upper() for x in ("_MPR_","'MPGR'")):
+			and not any(x.upper() in s.series_description.upper() for x in ("_MPR_","'MPGR'")) and not any(s.series_description.upper().endswith(x.upper()) for x in ("_MPR")):
 				postop = False
 				if 'SAR' in s.series_description.upper() or any(x in s.protocol_name.upper() for x in {'SAFE', 'STIMULATOR', 'STIM SAFE', 'POST OP','POST-OP','DEPTH ELECTRODES'}):
 					if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','C+','STEALTH POST','MPRAGE POST'}):
 						postop = True
 					
-				if any(substring.upper() in s.series_description.upper() for substring in {'AXT1 WAND','STEALTH', 'BRAVO','T1W_MPR_', 'FL3D_AXIAL','AX T1 3D', 'AX 3D T1', 'SAG 3D T1','T1 GRE3D', 'T1 SAG 3D', 'AX STEALTH BRAVO','STEREO','STEREO-INCLUDE','1.5 MM ANATOMY','MPRAGE','MP-RAGE'}) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR',"IR")):
+				if any(substring.upper() in s.series_description.upper() for substring in t1w_series_emory) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR',"IR")):
 					if not any(x.upper() in s.series_description.upper() for x in ("MPR_COR","MPR_SAG","_MPR_","MPGR","MPR COR","MPR SAG")):
 						if postop:
 							if 'T2' in s.series_description.upper():
@@ -310,7 +334,7 @@ def infotodict(seqinfo):
 			elif any(substring in s.study_description.upper() for substring in {'CT','HEAD-STEREO','HEAD','FL '}) and ('SUMMARY' not in s.series_description.upper()) and ('MR' not in s.study_description.upper()) and ('PET' not in s.study_description.upper())\
 				and not all(sub_str in [x.strip() for x in list(s.image_type)] for sub_str in ("DERIVED","SECONDARY","REFORMATTED")):
 				electrode_list = {'OVER', 'UNDER', 'ELECTRODE', 'SD ELECTRODE', 'ROUTINE', 'F_U_HEAD', 'F/U_HEAD', 'ER_HEAD', 'POST OP','POSTOP','0.625 X 0.625','NO ANGLE','DEPTH ELECTRODES','DEEP BRAIN STIMULATION STEALTH'}
-				electrode_list_exact={'VOL. 0.5','Vol. 0.5','STD STD 0.5','NON CE VOL PEDIATRIC BRAIN 26 0.5'}
+				
 				ct_list_exclude={'AXIAL 2.500','BRAIN BONE'}
 				frame_list = {'STEROTACTIC','STEREOTAXY', 'STEREOTACTIC','STEREOTACTIC FRAME', 'CTA_COW','AXIAL 1.200','NC AXIAL 1.200','HEAD-STEREO','1.25 X 1.25',"1.25 X 1.25 AXIAL NO ANGLE","HEAD  STEALTH"}
 				frame_exclude={}
