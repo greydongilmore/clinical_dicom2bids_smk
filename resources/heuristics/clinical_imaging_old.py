@@ -34,6 +34,17 @@ electrode_list_exact={
 	'NON CE VOL PEDIATRIC BRAIN 26 0.5'
 }
 
+pet_series={
+	'ITERATIVE',
+	'RECON',
+	'PET CORR',
+	'PET NAC',
+	'PET AC',
+	'Coronals',
+	'3D NAC',
+	'3D AC'
+}
+
 def create_key(template, outtype=('nii.gz'), annotation_classes=None):
 	if template is None or not template:
 		raise ValueError('Template must be a valid format string')
@@ -208,7 +219,7 @@ def infotodict(seqinfo):
 
 			#MRI
 			elif any(substring.upper() in s.study_description.upper() for substring in {'MR','CLEARPOINT'}) and not all(sub_str in [x.strip() for x in list(s.image_type)] for sub_str in ("ORIGINAL","PROJECTION IMAGE","PRIMARY","M","ND",'MPR'))\
-			and not any(x.upper() in s.series_description.upper() for x in ("_MPR_","'MPGR'")) and not any(s.series_description.upper().endswith(x.upper()) for x in ("_MPR")):
+			and not any(x.upper() in s.series_description.upper() for x in ("_MPR_","'MPGR'")) and "PET" not in s.study_description.upper() and not any(s.series_description.upper().endswith(x.upper()) for x in ("_MPR")):
 				postop = False
 				if 'SAR' in s.series_description.upper() or any(x in s.protocol_name.upper() for x in {'SAFE', 'STIMULATOR', 'STIM SAFE', 'POST OP','POST-OP','DEPTH ELECTRODES'}):
 					if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','C+','STEALTH POST','MPRAGE POST'}):
@@ -360,10 +371,10 @@ def infotodict(seqinfo):
 						info[ct].append({'item': s.series_id})
 
 			elif any(substring.upper() in s.study_description.upper() for substring in {'PET'}) or any(substring.upper() in s.series_description for substring in {'PET CORR'}):
-				if any(substring.upper() in s.series_description for substring in {'ITERATIVE','RECON','PET CORR','PET NAC','PET AC','Coronals'}):
-					if 'PET NAC' in s.series_description.upper():
+				if any(substring.upper() in s.series_description.upper() for substring in pet_series):
+					if 'NAC' in s.series_description.upper():
 						info[pet_acq].append({'item': s.series_id, 'acq': 'nac'})
-					elif 'PET AC' in s.series_description.upper():
+					elif 'AC' in s.series_description.upper():
 						info[pet_acq].append({'item': s.series_id, 'acq': 'ac'})
 					elif '3D_FBP' not in s.series_description.upper() and 'DYNAMIC' not in s.series_description.upper():
 						info[pet].append({'item': s.series_id})
