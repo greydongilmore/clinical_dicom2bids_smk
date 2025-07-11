@@ -23,7 +23,8 @@ t1w_series_emory={
 	'STEREO',
 	'STEREO-INCLUDE',
 	'1.5 MM ANATOMY',
-	'MPRAGE','MP-RAGE',
+	'MPRAGE',
+	'MP-RAGE',
 	'T1_3D_AX'
 }
 
@@ -116,7 +117,8 @@ def infotodict(seqinfo):
 	t1w_acq = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_T1w')
 	ir = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_run-{item:02d}_IRT1w')
 	ir_acq = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_IRT1w')
-	t2w = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_T2w')
+	t2w = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_run-{item:02d}_T2w')
+	t2w_acq = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_T2w')
 	t1w_pd = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_PD')
 	flair = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_run-{item:02d}_FLAIR')
 	flair_acq = create_key('{bids_subject_session_dir}/anat/{bids_subject_session_prefix}_acq-{acq}_run-{item:02d}_FLAIR')
@@ -165,6 +167,7 @@ def infotodict(seqinfo):
 	info = {t1w:[],
 			t1w_acq:[],
 			t2w:[],
+			t2w_acq:[],
 			t1w_pd:[],
 			ir: [],
 			ir_acq: [],
@@ -225,15 +228,20 @@ def infotodict(seqinfo):
 					if not any(x.upper() in s.protocol_name.upper() for x in {'POST STROKE','GAD','+C','C+','STEALTH POST','MPRAGE POST'}):
 						postop = True
 					
-				if any(substring.upper() in s.series_description.upper() for substring in t1w_series_emory) and all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR',"IR")):
+				if any(substring.upper() in s.series_description.upper() for substring in t1w_series_emory) and \
+				all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR',"IR")):
 					if not any(x.upper() in s.series_description.upper() for x in ("MPR_COR","MPR_SAG","_MPR_","MPGR","MPR COR","MPR SAG")):
 						if postop:
 							if 'T2' in s.series_description.upper():
-								info[t2w].append({'item': s.series_id, 'acq': 'Electrode'})
+								info[t2w_acq].append({'item': s.series_id, 'acq': 'Electrode'})
 							else:
 								info[t1w_acq].append({'item': s.series_id, 'acq': 'Electrode'})
 						else:
-							info[t1w].append({'item': s.series_id})
+							if 'T2' in s.series_description.upper():
+								info[t2w].append({'item': s.series_id})
+							else:
+								info[t1w].append({'item': s.series_id})
+
 				elif 'EPI' in s.series_description.upper():
 					if postop:
 						info[fmap_acq].append({'item': s.series_id, 'acq': 'Electrode'})
@@ -326,7 +334,7 @@ def infotodict(seqinfo):
 						if any(substring.upper() in s.series_description.upper() for substring in {'PD'}):
 							info[t1w_pd].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'T2', '2D'}):
-							info[t2w].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
+							info[t2w_acq].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'FLAIR'}):
 							info[flair_acq].append({'item': s.series_id, 'acq': 'Electrode' + orientation})
 						else:
@@ -335,7 +343,7 @@ def infotodict(seqinfo):
 						if any(substring.upper() in s.series_description.upper() for substring in {'PD'}):
 							info[t1w_pd].append({'item': s.series_id, 'acq': orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'T2','2D'}):
-							info[t2w].append({'item': s.series_id, 'acq': orientation})
+							info[t2w_acq].append({'item': s.series_id, 'acq': orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'FLAIR'}):
 							info[flair_acq].append({'item': s.series_id, 'acq': orientation})
 						elif any(substring.upper() in s.series_description.upper() for substring in {'SSFSE'}):
