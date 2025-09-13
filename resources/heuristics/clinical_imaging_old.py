@@ -25,7 +25,13 @@ t1w_series_emory={
 	'1.5 MM ANATOMY',
 	'MPRAGE',
 	'MP-RAGE',
-	'T1_3D_AX'
+	'T1_3D_AX',
+	'T1 AX MPR+C',
+	'3D T1 AX STEALTH',
+	'3D T1 AX STEALTH +C',
+	'SAG T1 MPRAGE NEUROQUANT',
+	'AX T1 MPRAGE',
+	'AX T1 MPRAGE POST'
 }
 
 electrode_list_exact={
@@ -33,6 +39,7 @@ electrode_list_exact={
 	'Vol. 0.5',
 	'STD STD 0.5',
 	'NON CE VOL PEDIATRIC BRAIN 26 0.5'
+	'HEAD_STEALTH'
 }
 
 pet_series={
@@ -43,7 +50,8 @@ pet_series={
 	'PET AC',
 	'Coronals',
 	'3D NAC',
-	'3D AC'
+	'3D AC',
+	'3D MAC'
 }
 
 def create_key(template, outtype=('nii.gz'), annotation_classes=None):
@@ -382,10 +390,9 @@ def infotodict(seqinfo):
 				if any(substring.upper() in s.series_description.upper() for substring in pet_series):
 					if 'NAC' in s.series_description.upper():
 						info[pet_acq].append({'item': s.series_id, 'acq': 'nac'})
-					elif 'AC' in s.series_description.upper():
-						info[pet_acq].append({'item': s.series_id, 'acq': 'ac'})
+					elif any(x.upper() in s.series_description.upper() for x in ('AC','MAC')):
+						if ('ACMAP' not in [x.strip() for x in list(s.image_type)]):
+							info[pet_acq].append({'item': s.series_id, 'acq': 'ac'})
 					elif '3D_FBP' not in s.series_description.upper() and 'DYNAMIC' not in s.series_description.upper():
 						info[pet].append({'item': s.series_id})
-			elif any(substring.upper() in s.series_description for substring in {'MAC'}):
-				info[pet_acq].append({'item': s.series_id, 'acq': 'MAC'})
 	return info

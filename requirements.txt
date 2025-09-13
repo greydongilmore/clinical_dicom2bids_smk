@@ -1,4 +1,5 @@
 dcmstack>=0.7.0
+dcm2niix>=1.0.0
 dicognito>=0.11.0
 h5py>=3.6.0
 pandas>=0.24.2
