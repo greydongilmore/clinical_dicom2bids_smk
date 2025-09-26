@@ -4,7 +4,7 @@
 #
 
 #bids_dir: /home/greydon/Documents/data/single
-bids_dir: /home/greydon/Documents/data/emory_seeg
+bids_dir: /home/greydon/Documents/data/moncton
 
 #work computer
 #bids_dir: /media/data/data/clinical

@@ -237,7 +237,7 @@ def infotodict(seqinfo):
 						postop = True
 					
 				if any(substring.upper() in s.series_description.upper() for substring in t1w_series_emory) and \
-				all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR',"IR")):
+				all(seq not in s.series_description.upper() for seq in ('FLAIR','FSPGR',"IR","T2 CUBE")):
 					if not any(x.upper() in s.series_description.upper() for x in ("MPR_COR","MPR_SAG","_MPR_","MPGR","MPR COR","MPR SAG")):
 						if postop:
 							if 'T2' in s.series_description.upper():
@@ -292,14 +292,15 @@ def infotodict(seqinfo):
 							info[t1w_acq].append({'item': s.series_id, 'acq': 'FSPGR'})
 						else:
 							info[irt1w].append({'item': s.series_id, 'acq': 'IR'})
-				
-				elif ('SPC_T2' in s.series_description.upper() or 'T2W_SPC' in s.series_description.upper() or 'T2_SPC' in s.series_description.upper()): 					
+				elif any(substring.upper() in s.series_description.upper() for substring in {'SPC_T2', 'T2W_SPC','T2_SPC','T2 CUBE'}): 					
 					if any(substring.upper() in (s.image_type[2].strip()) for substring in {'ND', 'MPR'}):
 						info[spc_T2w].append({'item': s.series_id})
-					if ('DIS2D' in (s.image_type[2].strip())):
+					elif ('DIS2D' in (s.image_type[2].strip())):
 						info[DIS2D_spc_T2w].append({'item': s.series_id})
-					if ('DIS3D' in (s.image_type[2].strip())):
+					elif ('DIS3D' in (s.image_type[2].strip())):
 						info[DIS3D_spc_T2w].append({'item': s.series_id})
+					else:
+						info[t2w].append({'item': s.series_id})
 
 				elif any(substring.upper() in s.series_description.upper() for substring in {'SWI'}):
 					if len(is_swi_derived(s.series_description))<1:
