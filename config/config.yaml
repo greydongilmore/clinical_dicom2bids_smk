@@ -4,7 +4,7 @@
 #
 
 #bids_dir: /home/greydon/Documents/data/single
-bids_dir: /home/greydon/Documents/data/moncton
+bids_dir: /home/greydon/Documents/data/lhsc_peds
 
 #work computer
 #bids_dir: /media/data/data/clinical
